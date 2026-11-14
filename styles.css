@@ -3275,11 +3275,6 @@ body {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: center;
-  margin-bottom: 10px;
-  max-height: 110px;
-  overflow-y: auto;
-  padding: 2px;
-}
   margin-bottom: 14px;
   max-height: 140px;
   overflow-y: auto;
@@ -4650,159 +4645,272 @@ body {
   background: rgba(255, 255, 255, 0.6);
 }
 
-/* Meta Bar */
+/* ============================================================
+   AUTHENTIC DUOLINGO 3D QUIZ TEST ARENA (PAGE VIEW)
+   ============================================================ */
+
+.vocab-page-card.duo-quiz-card {
+  max-width: 860px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 2.5px solid #e5e5e5;
+  border-bottom: 6px solid #d4d4d4;
+  border-radius: 28px;
+  padding: 24px 32px 28px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* 1. Meta Bar (Progress & Rewards) */
 .quiz-meta-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  border: 1.5px solid #fbcfe8;
-  border-radius: 12px;
-  padding: 4px 12px;
-  margin-bottom: 8px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: #831843;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-bottom: 3.5px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 10px 18px;
+  font-family: var(--font-ui), "Nunito", sans-serif;
+  user-select: none;
 }
 
-.quiz-meta-bar strong {
-  color: #db2777;
+.quiz-progress-text {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quiz-progress-text strong {
+  color: #58cc02;
+  font-size: 1.05rem;
+}
+
+.quiz-prog-icon {
+  font-size: 1.15rem;
+}
+
+.quiz-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quiz-score-pill {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-bottom: 2.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #b45309;
+}
+
+.quiz-score-pill strong {
+  color: #d97706;
 }
 
 .quiz-reward-pill {
-  color: #d97706;
-  background: #fef3c7;
-  padding: 2px 7px;
-  border-radius: 6px;
-  font-size: 0.7rem;
+  background: #fef9c3;
+  border: 1.5px solid #fde047;
+  border-bottom: 2.5px solid #eab308;
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #854d0e;
+  letter-spacing: 0.2px;
 }
 
-/* Question Card */
+/* 2. Hero Duolingo Question Stage */
 .quiz-question-box {
   background: #ffffff;
-  border: 1.5px solid #fbcfe8;
-  border-radius: 16px;
-  padding: 10px 14px 8px;
-  box-shadow: 0 3px 10px rgba(244, 114, 182, 0.08);
-  margin-bottom: 8px;
+  border: 2px solid #e5e5e5;
+  border-bottom: 4.5px solid #e5e5e5;
+  border-radius: 24px;
+  padding: 22px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .quiz-word-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 2px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.quiz-word-center {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .quiz-main-word {
-  font-size: 1.5rem;
+  font-size: 2.6rem;
   font-weight: 900;
-  color: #831843;
+  color: #1e293b;
   letter-spacing: -0.5px;
   margin: 0;
+  line-height: 1.1;
+  text-transform: lowercase;
 }
 
 .quiz-phonetic-badge {
-  font-size: 0.76rem;
-  color: #9d174d;
-  background: #fdf2f8;
-  border: 1px solid #fbcfe8;
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-weight: 700;
-}
-
-.quiz-speak-btn {
-  background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%);
-  color: #831843;
-  border: 1px solid #ec4899;
+  font-size: 1rem;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  border-bottom: 2.5px solid #cbd5e1;
+  padding: 4px 14px;
   border-radius: 9999px;
-  font-size: 0.7rem;
   font-weight: 800;
-  padding: 3px 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 1px 4px rgba(244, 114, 182, 0.2);
+  font-family: monospace;
 }
 
-.quiz-speak-btn:hover {
-  transform: translateY(-1px) scale(1.04);
-  background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-  color: #ffffff;
-}
-
-.quiz-question-prompt {
-  font-size: 0.78rem;
-  color: #4b5563;
-  margin: 2px 0 8px;
-}
-
-/* 4 Options Grid */
-.quiz-options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.quiz-opt-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  background: #ffffff;
-  border: 1.5px solid #fbcfe8;
-  border-radius: 12px;
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: #1f2937;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.quiz-opt-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: #f472b6;
-  background: #fff5f8;
-  box-shadow: 0 4px 10px rgba(244, 114, 182, 0.15);
-}
-
-.quiz-opt-btn .opt-label {
-  width: 22px;
-  height: 22px;
+/* Duolingo 3D Speaker Button */
+.quiz-speak-btn {
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: #fdf2f8;
-  border: 1.5px solid #fbcfe8;
+  background: #1cb0f6;
+  color: #ffffff;
+  border: none;
+  border-bottom: 4.5px solid #1899d6;
+  font-size: 1.45rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: #db2777;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(28, 176, 246, 0.32);
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
   flex-shrink: 0;
 }
 
+.quiz-speak-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.quiz-speak-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px !important;
+}
+
+.quiz-question-prompt {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #475569;
+  margin: 0;
+  text-align: center;
+}
+
+.quiz-question-prompt strong {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+/* 3. Chunky Duolingo 3D Options Grid */
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.quiz-opt-btn {
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: #ffffff;
+  border: 2.5px solid #e5e5e5;
+  border-bottom: 5px solid #d4d4d4;
+  border-radius: 20px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.quiz-opt-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: #84d8ff;
+  border-bottom-color: #1cb0f6;
+  background: #f0f9ff;
+  box-shadow: 0 6px 16px rgba(28, 176, 246, 0.15);
+}
+
+.quiz-opt-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px !important;
+}
+
+.quiz-opt-btn .opt-label {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-bottom: 3.5px solid #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.quiz-opt-btn .opt-text {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.25;
+  font-family: inherit;
+}
+
+/* Correct Answer State */
 .quiz-opt-btn.correct {
-  background: #d1fae5 !important;
-  border-color: #10b981 !important;
-  color: #065f46 !important;
+  background: #dcfce7 !important;
+  border-color: #58cc02 !important;
+  border-bottom-color: #46a302 !important;
+  color: #15803d !important;
   transform: scale(1.02);
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25) !important;
+  box-shadow: 0 6px 18px rgba(88, 204, 2, 0.25) !important;
 }
 
 .quiz-opt-btn.correct .opt-label {
-  background: #10b981;
+  background: #58cc02;
   color: #ffffff;
-  border-color: #059669;
+  border-color: #46a302;
+  border-bottom-color: #3b8a02;
 }
 
+.quiz-opt-btn.correct .opt-text {
+  color: #15803d;
+}
+
+/* Wrong Answer State */
 .quiz-opt-btn.wrong {
   background: #fee2e2 !important;
   border-color: #ef4444 !important;
-  color: #991b1b !important;
+  border-bottom-color: #dc2626 !important;
+  color: #b91c1c !important;
   animation: shake 0.35s ease;
 }
 
@@ -4810,85 +4918,165 @@ body {
   background: #ef4444;
   color: #ffffff;
   border-color: #dc2626;
+  border-bottom-color: #b91c1c;
 }
 
-/* Feedback Box */
+.quiz-opt-btn.wrong .opt-text {
+  color: #b91c1c;
+}
+
+/* 4. Duolingo Feedback Banner */
 .quiz-feedback-box {
-  padding: 6px 12px;
-  border-radius: 10px;
-  margin-top: 8px;
+  padding: 14px 20px;
+  border-radius: 18px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-weight: 800;
-  font-size: 0.8rem;
-  animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  gap: 10px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
+  animation: duoPopoverIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.quiz-feedback-icon {
+  font-size: 1.4rem;
 }
 
 .quiz-feedback-box.correct {
-  background: #ecfdf5;
-  border: 1.5px solid #a7f3d0;
-  color: #065f46;
+  background: #dcfce7;
+  border: 2.5px solid #86efac;
+  border-bottom: 4.5px solid #4ade80;
+  color: #14532d;
 }
 
 .quiz-feedback-box.wrong {
-  background: #fff1f2;
-  border: 1.5px solid #fecdd3;
-  color: #9f1239;
+  background: #fee2e2;
+  border: 2.5px solid #fca5a5;
+  border-bottom: 4.5px solid #f87171;
+  color: #7f1d1d;
 }
 
-/* Quiz Bottom Actions */
+/* 5. Big Chunky 3D Action Buttons */
 .quiz-bottom-actions {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  gap: 14px;
+  margin-top: 6px;
 }
 
 .quiz-next-btn {
-  flex: 1.2;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+  flex: 1.4;
+  height: 54px;
+  background: #58cc02;
   color: #ffffff;
-  font-size: 0.84rem;
-  font-weight: 800;
+  font-family: var(--font-ui), "Nunito", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
   border: none;
-  border-radius: 9999px;
+  border-bottom: 5px solid #46a302;
+  border-radius: 20px;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(244, 63, 94, 0.25);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 14px rgba(88, 204, 2, 0.35);
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
 .quiz-next-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgba(244, 63, 94, 0.35);
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 18px rgba(88, 204, 2, 0.45);
+}
+
+.quiz-next-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px !important;
 }
 
 .quiz-next-btn:disabled {
-  opacity: 0.5;
+  background: #e5e5e5;
+  color: #9ca3af;
+  border-bottom: 4.5px solid #d4d4d4;
+  box-shadow: none;
   cursor: not-allowed;
-  filter: grayscale(0.5);
+  filter: none;
+  opacity: 0.85;
 }
 
 .quiz-type-btn {
   flex: 1;
-  padding: 8px 14px;
+  height: 54px;
   background: #ffffff;
-  color: #831843;
-  border: 1.5px solid #fbcfe8;
-  font-size: 0.8rem;
-  font-weight: 800;
-  border-radius: 9999px;
+  color: #0284c7;
+  border: 2.5px solid #bae6fd;
+  border-bottom: 4.5px solid #38bdf8;
+  font-family: var(--font-ui), "Nunito", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(244, 114, 182, 0.1);
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 3px 10px rgba(56, 189, 248, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
 .quiz-type-btn:hover {
+  transform: translateY(-2px);
+  background: #f0f9ff;
+  border-color: #7dd3fc;
+  box-shadow: 0 6px 14px rgba(56, 189, 248, 0.25);
+}
+
+.quiz-type-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1.5px !important;
+}
+
+/* Top Tab Switcher (Quiz Test vs Shabd Khoj) */
+.vocab-page-tabs-bar {
+  max-width: 860px;
+  margin: 0 auto 12px;
+  display: flex;
+  background: rgba(251, 207, 232, 0.4);
+  border: 2px solid #fbcfe8;
+  border-radius: 9999px;
+  padding: 4px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.vocab-page-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #831843;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+}
+
+.vocab-page-tab.active {
+  background: #ffffff;
+  color: #be185d;
+  box-shadow: 0 4px 12px rgba(244, 114, 182, 0.28);
+  border-bottom: 3.5px solid #f472b6;
   transform: translateY(-1px);
-  border-color: #f472b6;
-  background: #fff5f8;
-  color: #db2777;
 }
 
 /* Tab 2: Duolingo Flashcard & Dictionary Search */
@@ -5113,26 +5301,17 @@ body {
 
 .vocab-page-wrapper {
   width: 100%;
-  max-width: 660px;
+  max-width: 860px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   margin: 0 auto;
+  padding: 4px 12px 24px;
 }
 
-/* Page Header with Kawaii Mascots */
+/* Page Header with Kawaii Mascots (Hidden to keep Duolingo quiz front-and-center) */
 .vocab-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 2px solid #fbcfe8;
-  border-radius: 20px;
-  padding: 6px 14px;
-  box-shadow: 0 4px 16px rgba(244, 114, 182, 0.12);
+  display: none;
 }
 
 .vocab-page-title-center {

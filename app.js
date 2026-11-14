@@ -1030,7 +1030,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111510; // Matches version.json build 2026111510 (v2.6.0 Duolingo Multi-Track Music Engine)
+const CURRENT_APP_BUILD = 2026111511; // Matches version.json build 2026111511 (v2.7.0 Duolingo 3D Quest Quiz UI)
 
 async function checkForWebUpdates() {
   try {

@@ -1171,26 +1171,32 @@
           </button>
         </div>
 
-        <!-- VIEW 1: 4-Option Quiz View (Page Layout) -->
+        <!-- VIEW 1: 4-Option Quiz View (Authentic Duolingo 3D Quest UI) -->
         <div class="vocab-page-view" id="pageViewQuiz">
-          <div class="vocab-page-card">
-            <!-- Meta Bar -->
+          <div class="vocab-page-card duo-quiz-card">
+            <!-- Meta Bar with Badges -->
             <div class="quiz-meta-bar">
-              <div class="quiz-progress-text">Sawal: <strong id="pageQCounter">1 / 10</strong></div>
-              <div class="quiz-score-pill">⭐ Score: <strong id="pageScoreText">0</strong></div>
-              <div class="quiz-reward-pill">💎 +5 Gems | ⭐ +20 XP</div>
+              <div class="quiz-progress-text">
+                <span class="quiz-prog-icon">🎯</span> Sawal: <strong id="pageQCounter">1 / 10</strong>
+              </div>
+              <div class="quiz-meta-right">
+                <div class="quiz-score-pill">⭐ Score: <strong id="pageScoreText">0</strong></div>
+                <div class="quiz-reward-pill">💎 +5 Gems • ⚡ +20 XP</div>
+              </div>
             </div>
 
-            <!-- Question Card -->
+            <!-- Question Card (Hero Duolingo Word Stage) -->
             <div class="quiz-question-box">
               <div class="quiz-word-row">
-                <h3 class="quiz-main-word" id="pageTargetWord">courage</h3>
-                <span class="quiz-phonetic-badge" id="pagePhonetic">[ courage ]</span>
-                <button class="quiz-speak-btn" id="pageAudioBtn" type="button" title="Pronunciation sunein">🔊 Bol Kar Suno</button>
+                <button class="quiz-speak-btn" id="pageAudioBtn" type="button" title="Pronunciation sunein (Click to hear)" aria-label="Listen Pronunciation">🔊</button>
+                <div class="quiz-word-center">
+                  <h3 class="quiz-main-word" id="pageTargetWord">breakfast</h3>
+                  <span class="quiz-phonetic-badge" id="pagePhonetic">[ breakfast ]</span>
+                </div>
               </div>
               <p class="quiz-question-prompt">Niche diye gaye 4 vikalpon me se sahi <strong>Hindi Arth</strong> chuniye:</p>
 
-              <!-- 4 Choice Grid -->
+              <!-- 4 Choice Grid (Chunky Duolingo 3D Option Tiles) -->
               <div class="quiz-options-grid" id="pageOptionsGrid">
                 <button class="quiz-opt-btn" data-opt="0" type="button"><span class="opt-label">A</span> <span class="opt-text" id="pageOptText0">Option 1</span></button>
                 <button class="quiz-opt-btn" data-opt="1" type="button"><span class="opt-label">B</span> <span class="opt-text" id="pageOptText1">Option 2</span></button>
@@ -1198,14 +1204,14 @@
                 <button class="quiz-opt-btn" data-opt="3" type="button"><span class="opt-label">D</span> <span class="opt-text" id="pageOptText3">Option 4</span></button>
               </div>
 
-              <!-- Feedback message -->
+              <!-- Feedback message (Duolingo Banner) -->
               <div class="quiz-feedback-box" id="pageFeedbackBox" style="display:none;">
                 <span class="quiz-feedback-icon" id="pageFeedbackIcon">🎉</span>
                 <div class="quiz-feedback-text" id="pageFeedbackText">Shaabash! Bilkul Sahi Jawab!</div>
               </div>
             </div>
 
-            <!-- Quiz Action Bottom Row -->
+            <!-- Quiz Action Bottom Row (Big Chunky 3D Action Buttons) -->
             <div class="quiz-bottom-actions">
               <button class="quiz-next-btn" id="pageNextBtn" type="button" disabled>
                 <span>Agla Sawal (Next) ➔</span>
