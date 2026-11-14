@@ -414,6 +414,74 @@ body {
   background: #d1fae5;
   color: #065f46;
   box-shadow: var(--clay-shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.badge-offline.badge-cloud-online {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.badge-offline.badge-local-offline {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.update-toast-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  background: #ffffff;
+  border: 2px solid #f472b6;
+  border-radius: 20px;
+  padding: 14px 20px;
+  box-shadow: 0 12px 30px rgba(244, 114, 182, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: slideInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ut-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ut-icon {
+  font-size: 1.6rem;
+}
+
+.ut-content strong {
+  font-size: 0.95rem;
+  color: #be185d;
+  display: block;
+}
+
+.ut-content p {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+.ut-btn {
+  background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+  transition: all 0.2s;
+}
+
+.ut-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(244, 63, 94, 0.4);
 }
 
 .badge-streak {

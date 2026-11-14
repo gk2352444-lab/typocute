@@ -525,6 +525,69 @@ function showFloatingXp(amount = 10) {
 }
 
 /* ═══════════════════════════════════════════════════
+   5b. CLOUD CONNECTION & AUTO-UPDATE ENGINE
+   ═══════════════════════════════════════════════════ */
+
+function initCloudConnectionSync() {
+  updateConnectionStatus();
+  window.addEventListener("online", updateConnectionStatus);
+  window.addEventListener("offline", updateConnectionStatus);
+
+  // Check periodically every 60 seconds if online
+  setInterval(() => {
+    if (navigator.onLine) {
+      checkForWebUpdates();
+    }
+  }, 60000);
+}
+
+function updateConnectionStatus() {
+  const badge = document.getElementById("liveConnectionBadge");
+  if (!badge) return;
+
+  if (navigator.onLine) {
+    badge.className = "badge-offline badge-cloud-online";
+    badge.innerHTML = "☁️ <span>Cloud Connected</span>";
+    badge.title = "Server se live connected hai! Naye updates background me automatically aate rahenge.";
+    checkForWebUpdates();
+  } else {
+    badge.className = "badge-offline badge-local-offline";
+    badge.innerHTML = "🟢 <span>100% Offline</span>";
+    badge.title = "Internet nahi hai — par koi baat nahi, sabhi lessons aur features 100% offline chalte rahenge!";
+  }
+}
+
+async function checkForWebUpdates() {
+  try {
+    const res = await fetch("https://gk2352444-lab.github.io/typocute/version.json?t=" + Date.now());
+    if (!res.ok) return;
+    const data = await res.json();
+    const currentBuild = 2026111501;
+    if (data.build && data.build > currentBuild) {
+      showUpdateAvailableToast(data);
+    }
+  } catch(e) {}
+}
+
+function showUpdateAvailableToast(updateData) {
+  if (document.getElementById("typoUpdateToast")) return;
+  const toast = document.createElement("div");
+  toast.id = "typoUpdateToast";
+  toast.className = "update-toast-banner";
+  toast.innerHTML = `
+    <div class="ut-content">
+      <span class="ut-icon">✨</span>
+      <div>
+        <strong>Naya Update Ready Hai! (v${updateData.version || "New"})</strong>
+        <p>Server se naye features aa gaye hain. Refresh karke apply karein.</p>
+      </div>
+    </div>
+    <button class="ut-btn" onclick="window.location.reload(true)">🔄 Refresh Karein</button>
+  `;
+  document.body.appendChild(toast);
+}
+
+/* ═══════════════════════════════════════════════════
    6. DOM-READY BOOTSTRAP
    ═══════════════════════════════════════════════════ */
 
@@ -556,6 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Sister's Simplified 2-Mode App (Small Words & 50-Word Paragraphs)
     initSimplifiedTwoModeApp();
     initVocabQuiz();
+    initCloudConnectionSync();
 
     // Check URL hash for direct navigation
     if (initialHash && ["arena", "curriculum", "ai", "custom", "stats"].includes(initialHash)) {

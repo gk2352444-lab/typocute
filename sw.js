@@ -1,15 +1,17 @@
 /**
- * sw.js - Service Worker for Offline TypoCute
+ * sw.js - Service Worker for Offline TypoCute with Auto-Update
  */
-const CACHE_NAME = "typocute-cache-v2";
+const CACHE_NAME = "typocute-cache-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./vocab_categories.js",
   "./words_10k.js",
   "./lessons.js",
   "./ai.js",
+  "./version.json",
   "./app_icon.png",
   "./manifest.json"
 ];
@@ -36,10 +38,26 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 
+// Stale-While-Revalidate: Return cached response immediately for instant offline speed,
+// but fetch latest from network in background to update cache for next time!
 self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
+
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request).catch(() => caches.match("./index.html"));
+    caches.match(e.request).then((cachedResponse) => {
+      const fetchPromise = fetch(e.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(e.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
     })
   );
 });

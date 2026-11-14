@@ -1,0 +1,19 @@
+{
+  "version": "2.1.0",
+  "build": 2026111501,
+  "updatedAt": "2026-11-15T00:20:00Z",
+  "appName": "TypoCute Duolingo Edition",
+  "releaseNotes": "Auto-Updating Hybrid Desktop Release with GitHub Sync",
+  "serverUrl": "https://gk2352444-lab.github.io/typocute/",
+  "files": [
+    "index.html",
+    "styles.css",
+    "app.js",
+    "vocab_categories.js",
+    "words_10k.js",
+    "lessons.js",
+    "ai.js",
+    "sw.js",
+    "manifest.json"
+  ]
+}
