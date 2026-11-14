@@ -1,9 +1,9 @@
 {
-  "version": "2.5.2",
-  "build": 2026111508,
-  "updatedAt": "2026-11-15T01:31:00Z",
+  "version": "2.5.3",
+  "build": 2026111509,
+  "updatedAt": "2026-11-15T01:41:00Z",
   "appName": "TypoCute Duolingo Edition",
-  "releaseNotes": "Authentic Duolingo 3D Quest UI redesign for Progress Tracker Modal with chunky 3D stats, animated roadmap, and kawaii offline backup",
+  "releaseNotes": "Clean Duolingo UI: Removed fluff/storage explanations, removed redundant top-bar pills, and enlarged sound/music controls to chunky Duolingo 3D buttons",
   "serverUrl": "https://gk2352444-lab.github.io/typocute/",
   "files": [
     "index.html",

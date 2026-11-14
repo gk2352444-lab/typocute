@@ -104,20 +104,14 @@
         </div>
 
         <div class="duo-header-metrics">
-          <div class="duo-pill duo-hearts-pill" id="heartsPill" title="Unlimited Practice Mode (No Hearts Limit)">
-            <span class="duo-heart-beat">💖</span>
-            <span id="liveHearts">∞</span>
-          </div>
-          <div class="duo-pill duo-combo-pill" id="comboPill" title="Keystroke Combo">
-            <span>🔥</span>
-            <span id="comboCount">0</span>x
-          </div>
-          <div class="duo-pill duo-wpm-pill" title="Typing Speed">
-            <span>⚡</span>
-            <span id="liveWpm">0</span> <small>WPM</small>
-          </div>
-          <button class="duo-sound-btn active" id="soundToggle" title="Sound Effects Profile">🔊</button>
-          <button class="duo-sound-btn" id="lofiToggle" title="Cozy Lofi Study Beats (100% Offline 🎵)">🎵</button>
+          <!-- Hidden redundant pills to keep JS state intact without cluttering UI -->
+          <div class="duo-pill duo-hearts-pill" id="heartsPill" style="display:none;"><span id="liveHearts">∞</span></div>
+          <div class="duo-pill duo-combo-pill" id="comboPill" style="display:none;"><span id="comboCount">0</span></div>
+          <div class="duo-pill duo-wpm-pill" id="wpmPill" style="display:none;"><span id="liveWpm">0</span></div>
+
+          <!-- Professional Duolingo 3D Audio Buttons -->
+          <button class="duo-sound-btn active" id="soundToggle" type="button" title="Voice & Sound Effects (Click to Mute / Unmute)" aria-label="Toggle Sound">🔊</button>
+          <button class="duo-sound-btn duo-lofi-btn" id="lofiToggle" type="button" title="Cozy Lofi Study Beats (100% Offline 🎵)" aria-label="Toggle Lofi Music">🎵</button>
         </div>
       </div>
 
@@ -1045,7 +1039,7 @@
         <div class="reset-progress-card" style="margin-top:20px; background:#fff1f2; border:2px dashed #f43f5e; border-radius:20px; padding:18px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
           <div>
             <div style="font-weight:800; font-size:1.05rem; color:#be123c;">🔄 Nayi Shuruat (Reset All Progress)</div>
-            <div style="font-size:0.88rem; color:#9f1239; margin-top:3px;">Agar aap ya aapki behen sabhi XP, Gems aur essays shuruat (Day 1 / 0 XP) se start karna chahte hain toh yahan se reset karein.</div>
+            <div style="font-size:0.88rem; color:#9f1239; margin-top:3px;">Agar aap sabhi XP, Gems aur essays shuruat se start karna chahte hain toh yahan se reset karein.</div>
           </div>
           <button class="shop-action-btn" style="background:linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color:#fff; border:none; border-radius:30px; padding:10px 22px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(244,63,94,0.35); font-size:0.9rem;" onclick="resetAllProgress()">🔄 Reset All Progress</button>
         </div>
@@ -1557,7 +1551,7 @@
           <span class="pt-icon">📊</span>
           <div>
             <h2 class="pt-title">TypoCute Progress Tracker</h2>
-            <p class="pt-subtitle">Aapki behen ki typing progress aur 30-essay master roadmap 🌸</p>
+            <p class="pt-subtitle">Daily practice score aur 30-essay master roadmap 🌸</p>
           </div>
         </div>
         <button class="pt-close-btn" id="closeProgressTrackerBtn" type="button" onclick="closeProgressTrackerModal()" title="Close">✕</button>
@@ -1604,18 +1598,6 @@
       <!-- 30 Essays Detailed Roadmap Checklist -->
       <div class="pt-essays-list" id="ptEssaysChecklist">
         <!-- Injected dynamically by JS as Duolingo 3D cards -->
-      </div>
-
-      <!-- Duolingo Friendly Tip Box (Mimi the Bunny Companion) -->
-      <div class="pt-storage-info-box">
-        <div class="pt-storage-mascot">🐰</div>
-        <div class="pt-storage-content">
-          <div class="pt-storage-title">🔒 100% Offline & Auto-Saved on your Laptop</div>
-          <div class="pt-storage-desc">
-            Aapka data <strong>%LocalAppData%\TypoCute\UserData</strong> me safely save hota hai.
-            Browser history ya cache clear karne se bhi progress delete nahi hogi!
-          </div>
-        </div>
       </div>
 
       <!-- Duolingo 3D Action Buttons -->

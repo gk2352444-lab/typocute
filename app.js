@@ -818,7 +818,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111508; // Matches version.json build 2026111508 (v2.5.2 Duolingo Progress Tracker UI)
+const CURRENT_APP_BUILD = 2026111509; // Matches version.json build 2026111509 (v2.5.3 Clean Duolingo UI & Audio Controls)
 
 async function checkForWebUpdates() {
   try {
@@ -4450,13 +4450,7 @@ function markParagraphCompleted(paraId) {
 function updateLifetimeProgress() {
   const el = document.getElementById("progressCount");
   if (!el) return;
-  if (CURRENT_SIMPLIFIED_MODE === "small_words") {
-    const done = INFINITE_PROGRESS.completedWords.length;
-    el.textContent = `${STATE.itemIndex + 1}/${STATE.currentItems.length} • ✅ ${done} Words`;
-  } else {
-    const done = INFINITE_PROGRESS.completedParas.length;
-    el.textContent = `${STATE.itemIndex + 1}/${STATE.currentItems.length} • ✅ ${done}/30 Essays`;
-  }
+  el.textContent = `${STATE.itemIndex + 1} / ${STATE.currentItems.length || 10}`;
 }
 
 /* ── Mode State ── */
