@@ -1548,7 +1548,7 @@
     </svg>
   </div>
 
-  <!-- 7. Progress Tracker & Roadmap Modal (कहाँ तक पहुँचे) -->
+  <!-- 7. Progress Tracker & Roadmap Modal (Duolingo 3D Quest UI) -->
   <div class="modal-overlay" id="progressTrackerModal" style="display:none;">
     <div class="modal-card progress-tracker-card">
       <!-- Modal Header -->
@@ -1556,65 +1556,75 @@
         <div class="pt-title-wrap">
           <span class="pt-icon">📊</span>
           <div>
-            <h2 class="pt-title">TypoCute Progress Tracker (कहाँ तक पहुँचे)</h2>
-            <p class="pt-subtitle">Aapki behen ki typing progress aur 30-essay roadmap</p>
+            <h2 class="pt-title">TypoCute Progress Tracker</h2>
+            <p class="pt-subtitle">Aapki behen ki typing progress aur 30-essay master roadmap 🌸</p>
           </div>
         </div>
-        <button class="pt-close-btn" id="closeProgressTrackerBtn" type="button" onclick="closeProgressTrackerModal()">✕</button>
+        <button class="pt-close-btn" id="closeProgressTrackerBtn" type="button" onclick="closeProgressTrackerModal()" title="Close">✕</button>
       </div>
 
-      <!-- Quick Summary Cards Row -->
+      <!-- Duolingo 3D Chunky Stat Cards Row -->
       <div class="pt-summary-grid">
-        <div class="pt-stat-box">
-          <div class="pt-stat-icon">📝</div>
+        <div class="pt-stat-box pt-stat-essays">
+          <div class="pt-stat-icon">📚</div>
           <div class="pt-stat-val" id="ptParasCount">0 / 30</div>
           <div class="pt-stat-lbl">50-Word Essays</div>
         </div>
-        <div class="pt-stat-box">
-          <div class="pt-stat-icon">🌸</div>
+        <div class="pt-stat-box pt-stat-words">
+          <div class="pt-stat-icon">💎</div>
           <div class="pt-stat-val" id="ptWordsCount">0 / 2,211</div>
           <div class="pt-stat-lbl">Words Mastered</div>
         </div>
-        <div class="pt-stat-box">
-          <div class="pt-stat-icon">⭐</div>
+        <div class="pt-stat-box pt-stat-xp">
+          <div class="pt-stat-icon">⚡</div>
           <div class="pt-stat-val" id="ptXpVal">0 XP</div>
           <div class="pt-stat-lbl">Total Score</div>
         </div>
-        <div class="pt-stat-box">
-          <div class="pt-stat-icon">🍓</div>
+        <div class="pt-stat-box pt-stat-streak">
+          <div class="pt-stat-icon">🔥</div>
           <div class="pt-stat-val" id="ptStreakVal">1 Day</div>
           <div class="pt-stat-lbl">Daily Streak</div>
         </div>
       </div>
 
-      <!-- 30 Essays Detailed Roadmap Checklist -->
-      <div class="pt-section-header">
-        <div class="pt-sec-title">📑 50-Word Essays Roadmap (30 Lessons)</div>
-        <span class="pt-sec-badge" id="ptEssaysProgressPercent">0% Completed</span>
-      </div>
-      <div class="pt-essays-list" id="ptEssaysChecklist">
-        <!-- Injected dynamically by JS -->
+      <!-- Duolingo 3D Chunky Progress Bar Section -->
+      <div class="pt-roadmap-box">
+        <div class="pt-roadmap-header">
+          <div class="pt-roadmap-title">
+            <span class="pt-rm-icon">🏆</span>
+            <span>30-Day Master Essays Roadmap</span>
+          </div>
+          <span class="pt-rm-badge" id="ptEssaysProgressPercent">0% Completed</span>
+        </div>
+        <div class="pt-duo-bar-track">
+          <div class="pt-duo-bar-fill" id="ptRoadmapBarFill" style="width: 0%;"></div>
+        </div>
       </div>
 
-      <!-- Storage Info Box (Where data is saved) -->
+      <!-- 30 Essays Detailed Roadmap Checklist -->
+      <div class="pt-essays-list" id="ptEssaysChecklist">
+        <!-- Injected dynamically by JS as Duolingo 3D cards -->
+      </div>
+
+      <!-- Duolingo Friendly Tip Box (Mimi the Bunny Companion) -->
       <div class="pt-storage-info-box">
-        <div class="pt-storage-icon">💾</div>
+        <div class="pt-storage-mascot">🐰</div>
         <div class="pt-storage-content">
-          <div class="pt-storage-title">Progress Kahan Save Hoti Hai? (Storage Location)</div>
+          <div class="pt-storage-title">🔒 100% Offline & Auto-Saved on your Laptop</div>
           <div class="pt-storage-desc">
-            TypoCute ka data aapke computer me <strong>%LocalAppData%\TypoCute\UserData</strong> folder me 100% offline aur safely save hota hai.
-            Browser history ya cache clear karne se bhi yeh progress delete nahi hoti.
+            Aapka data <strong>%LocalAppData%\TypoCute\UserData</strong> me safely save hota hai.
+            Browser history ya cache clear karne se bhi progress delete nahi hogi!
           </div>
         </div>
       </div>
 
-      <!-- Backup & Restore Actions -->
+      <!-- Duolingo 3D Action Buttons -->
       <div class="pt-actions-row">
-        <button class="pt-btn-backup" id="btnDownloadBackup" type="button" onclick="exportProgressBackup()">
-          📥 Backup File Download Karein (.json)
+        <button class="pt-duo-action-btn pt-action-backup" id="btnDownloadBackup" type="button" onclick="exportProgressBackup()">
+          <span>📥 Backup Download (.json)</span>
         </button>
-        <button class="pt-btn-restore" id="btnTriggerRestore" type="button" onclick="document.getElementById('backupFileInput').click()">
-          📤 Backup File Restore Karein (.json)
+        <button class="pt-duo-action-btn pt-action-restore" id="btnTriggerRestore" type="button" onclick="document.getElementById('backupFileInput').click()">
+          <span>📤 Backup Restore (.json)</span>
         </button>
         <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="if(this.files[0]) importProgressBackup(this.files[0])">
       </div>

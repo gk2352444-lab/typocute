@@ -818,7 +818,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111506; // Matches version.json build 2026111506
+const CURRENT_APP_BUILD = 2026111508; // Matches version.json build 2026111508 (v2.5.2 Duolingo Progress Tracker UI)
 
 async function checkForWebUpdates() {
   try {
@@ -4744,6 +4744,9 @@ function openProgressTrackerModal() {
   const ptPercent = document.getElementById("ptEssaysProgressPercent");
   if (ptPercent) ptPercent.textContent = `${percent}% Completed`;
 
+  const ptBar = document.getElementById("ptRoadmapBarFill");
+  if (ptBar) ptBar.style.width = `${percent}%`;
+
   const listEl = document.getElementById("ptEssaysChecklist");
   if (listEl) {
     listEl.innerHTML = "";
@@ -4754,13 +4757,19 @@ function openProgressTrackerModal() {
       row.title = "Click karke yeh essay type karna shuru karein";
 
       row.innerHTML = `
-        <div class="pt-essay-info">
-          <span>${isDone ? "✅" : "📝"}</span>
-          <span>#${idx + 1}. ${p.title || p.topic || "Essay " + (idx + 1)}</span>
+        <div class="pt-essay-left">
+          <div class="pt-essay-num-badge ${isDone ? "is-done" : ""}">${String(idx + 1).padStart(2, "0")}</div>
+          <div class="pt-essay-text">
+            <span class="pt-essay-name">${p.title || p.topic || "Essay " + (idx + 1)}</span>
+            <span class="pt-essay-meta">50 Words • 80 XP • 🌸 Hindi Anuvad</span>
+          </div>
         </div>
-        <span class="pt-essay-badge ${isDone ? "completed" : "pending"}">
-          ${isDone ? "✅ Done" : "⏳ Practice"}
-        </span>
+        <div class="pt-essay-right">
+          ${isDone 
+            ? `<span class="pt-duo-done-badge">✅ DONE</span>` 
+            : `<button class="pt-duo-start-btn" type="button">▶️ START</button>`
+          }
+        </div>
       `;
 
       row.onclick = () => {
