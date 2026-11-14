@@ -1,7 +1,7 @@
 /**
  * sw.js - Service Worker for Offline TypoCute with Auto-Update
  */
-const CACHE_NAME = "typocute-cache-v3";
+const CACHE_NAME = "typocute-cache-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -11,7 +11,6 @@ const ASSETS = [
   "./words_10k.js",
   "./lessons.js",
   "./ai.js",
-  "./version.json",
   "./app_icon.png",
   "./manifest.json"
 ];
@@ -42,6 +41,14 @@ self.addEventListener("activate", (e) => {
 // but fetch latest from network in background to update cache for next time!
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+
+  // Never cache version.json in Service Worker - always fetch latest from network
+  if (e.request.url.includes("version.json")) {
+    e.respondWith(
+      fetch(e.request).catch(() => new Response("{}", { headers: { "Content-Type": "application/json" } }))
+    );
+    return;
+  }
 
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {

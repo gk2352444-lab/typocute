@@ -484,6 +484,27 @@ body {
   box-shadow: 0 6px 14px rgba(244, 63, 94, 0.4);
 }
 
+.ut-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.ut-close-btn:hover {
+  color: #e11d48;
+  background: #fdf2f8;
+  transform: scale(1.15);
+}
+
 .badge-streak {
   font-size: 0.72rem;
   padding: 4px 10px;

@@ -569,20 +569,65 @@ function updateConnectionStatus() {
   }
 }
 
+const CURRENT_APP_BUILD = 2026111502; // Matches version.json build 2026111502
+
 async function checkForWebUpdates() {
   try {
     const res = await fetch("https://gk2352444-lab.github.io/typocute/version.json?t=" + Date.now());
     if (!res.ok) return;
     const data = await res.json();
-    const currentBuild = 2026111501;
-    if (data.build && data.build > currentBuild) {
+    
+    // Check if student already applied or dismissed this build
+    const dismissedBuild = parseInt(localStorage.getItem("typo_dismissed_update") || "0", 10);
+    if (data.build && data.build > CURRENT_APP_BUILD && data.build > dismissedBuild) {
       showUpdateAvailableToast(data);
     }
   } catch(e) {}
 }
 
+window.applyWebUpdate = async function(targetBuild) {
+  try {
+    if (targetBuild) {
+      localStorage.setItem("typo_dismissed_update", targetBuild.toString());
+    }
+    const toast = document.getElementById("typoUpdateToast");
+    if (toast) toast.remove();
+
+    // Clear service worker caches to force immediate refresh of all files
+    if ("serviceWorker" in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let reg of registrations) {
+          await reg.update();
+        }
+        if ("caches" in window) {
+          const keys = await caches.keys();
+          for (let key of keys) {
+            await caches.delete(key);
+          }
+        }
+      } catch(e) {}
+    }
+    
+    // Force reload with cache-busting query param
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.location.href = cleanUrl + "?t=" + Date.now();
+  } catch(err) {
+    window.location.reload();
+  }
+};
+
+window.dismissWebUpdate = function(targetBuild) {
+  if (targetBuild) {
+    localStorage.setItem("typo_dismissed_update", targetBuild.toString());
+  }
+  const toast = document.getElementById("typoUpdateToast");
+  if (toast) toast.remove();
+};
+
 function showUpdateAvailableToast(updateData) {
   if (document.getElementById("typoUpdateToast")) return;
+  const targetBuild = updateData.build || 0;
   const toast = document.createElement("div");
   toast.id = "typoUpdateToast";
   toast.className = "update-toast-banner";
@@ -594,7 +639,10 @@ function showUpdateAvailableToast(updateData) {
         <p>Server se naye features aa gaye hain. Refresh karke apply karein.</p>
       </div>
     </div>
-    <button class="ut-btn" onclick="window.location.reload(true)">🔄 Refresh Karein</button>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button class="ut-btn" onclick="applyWebUpdate(${targetBuild})">🔄 Refresh Karein</button>
+      <button class="ut-close-btn" onclick="dismissWebUpdate(${targetBuild})" title="Baad me karein">✕</button>
+    </div>
   `;
   document.body.appendChild(toast);
 }
