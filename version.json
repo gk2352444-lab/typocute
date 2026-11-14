@@ -1,9 +1,9 @@
 {
-  "version": "2.5.3",
-  "build": 2026111509,
-  "updatedAt": "2026-11-15T01:41:00Z",
+  "version": "2.6.0",
+  "build": 2026111510,
+  "updatedAt": "2026-11-15T01:46:00Z",
   "appName": "TypoCute Duolingo Edition",
-  "releaseNotes": "Clean Duolingo UI: Removed fluff/storage explanations, removed redundant top-bar pills, and enlarged sound/music controls to chunky Duolingo 3D buttons",
+  "releaseNotes": "Duolingo Multi-Track Study Music Engine: Added Cozy Lofi, Gentle Rain, Kawaii 8-Bit Melody, and Peaceful Ghibli Piano with interactive 3D selector popover",
   "serverUrl": "https://gk2352444-lab.github.io/typocute/",
   "files": [
     "index.html",

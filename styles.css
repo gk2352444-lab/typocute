@@ -812,6 +812,194 @@ body {
   }
 }
 
+/* Duolingo 3D Music Selector Popover */
+.duo-music-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.duo-music-popover {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 290px;
+  background: #ffffff;
+  border-radius: 22px;
+  border: 2px solid #e5e5e5;
+  border-bottom: 5px solid #d4d4d4;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  padding: 14px 16px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: duoPopoverIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes duoPopoverIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dmp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.dmp-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.dmp-title-icon {
+  font-size: 1.15rem;
+}
+
+.dmp-close-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dmp-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.dmp-tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dmp-track-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-bottom: 3.5px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: left;
+  user-select: none;
+}
+
+.dmp-track-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1.5px);
+}
+
+.dmp-track-btn:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px !important;
+}
+
+.dmp-track-btn.active {
+  background: #faf5ff;
+  border-color: #c084fc;
+  border-bottom-color: #9333ea;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+}
+
+.dmp-track-icon {
+  font-size: 1.45rem;
+  flex-shrink: 0;
+}
+
+.dmp-track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dmp-track-name {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.dmp-track-btn.active .dmp-track-name {
+  color: #7e22ce;
+}
+
+.dmp-track-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dmp-track-indicator {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #9333ea;
+  width: 18px;
+  text-align: center;
+}
+
+.dmp-footer {
+  padding-top: 4px;
+}
+
+.dmp-stop-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: #fee2e2;
+  border: 1.5px solid #fca5a5;
+  border-bottom: 3.5px solid #ef4444;
+  color: #991b1b;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.dmp-stop-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+.dmp-stop-btn:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px !important;
+}
+
 /* 2. Duolingo Exercise Subheader */
 .duo-exercise-bar {
   display: flex;

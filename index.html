@@ -111,7 +111,58 @@
 
           <!-- Professional Duolingo 3D Audio Buttons -->
           <button class="duo-sound-btn active" id="soundToggle" type="button" title="Voice & Sound Effects (Click to Mute / Unmute)" aria-label="Toggle Sound">🔊</button>
-          <button class="duo-sound-btn duo-lofi-btn" id="lofiToggle" type="button" title="Cozy Lofi Study Beats (100% Offline 🎵)" aria-label="Toggle Lofi Music">🎵</button>
+          
+          <div class="duo-music-wrapper" id="duoMusicWrapper">
+            <button class="duo-sound-btn duo-lofi-btn" id="lofiToggle" type="button" title="Study Background Music (Click for tracks)" aria-label="Toggle Study Music">🎵</button>
+            <div class="duo-music-popover" id="duoMusicPopover" style="display:none;">
+              <div class="dmp-header">
+                <div class="dmp-title">
+                  <span class="dmp-title-icon">🎧</span>
+                  <span>Study Music Tracks</span>
+                </div>
+                <button class="dmp-close-btn" type="button" onclick="toggleMusicPopover(false)" title="Close">✕</button>
+              </div>
+              <div class="dmp-tracks-list">
+                <button class="dmp-track-btn active" id="dmpBtn-lofi" data-track="lofi" type="button" onclick="selectMusicTrack('lofi')">
+                  <span class="dmp-track-icon">☕</span>
+                  <div class="dmp-track-info">
+                    <strong class="dmp-track-name">Cozy Lofi Beats</strong>
+                    <span class="dmp-track-desc">Warm Rhodes jazz chords</span>
+                  </div>
+                  <span class="dmp-track-indicator" id="dmpInd-lofi">▶</span>
+                </button>
+                <button class="dmp-track-btn" id="dmpBtn-rain" data-track="rain" type="button" onclick="selectMusicTrack('rain')">
+                  <span class="dmp-track-icon">🌧️</span>
+                  <div class="dmp-track-info">
+                    <strong class="dmp-track-name">Gentle Rain & Cafe</strong>
+                    <span class="dmp-track-desc">Soothing ambient rain focus</span>
+                  </div>
+                  <span class="dmp-track-indicator" id="dmpInd-rain"></span>
+                </button>
+                <button class="dmp-track-btn" id="dmpBtn-chiptune" data-track="chiptune" type="button" onclick="selectMusicTrack('chiptune')">
+                  <span class="dmp-track-icon">🎮</span>
+                  <div class="dmp-track-info">
+                    <strong class="dmp-track-name">Kawaii 8-Bit Melody</strong>
+                    <span class="dmp-track-desc">Animal Crossing game vibes</span>
+                  </div>
+                  <span class="dmp-track-indicator" id="dmpInd-chiptune"></span>
+                </button>
+                <button class="dmp-track-btn" id="dmpBtn-piano" data-track="piano" type="button" onclick="selectMusicTrack('piano')">
+                  <span class="dmp-track-icon">🎹</span>
+                  <div class="dmp-track-info">
+                    <strong class="dmp-track-name">Peaceful Ghibli Piano</strong>
+                    <span class="dmp-track-desc">Calm classical arpeggios</span>
+                  </div>
+                  <span class="dmp-track-indicator" id="dmpInd-piano"></span>
+                </button>
+              </div>
+              <div class="dmp-footer">
+                <button class="dmp-stop-btn" id="dmpStopBtn" type="button" onclick="stopMusicTrack()">
+                  <span>⏹️ Stop Music</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

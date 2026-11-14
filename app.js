@@ -376,30 +376,135 @@ function playTileClick() {
 }
 
 /* ═══════════════════════════════════════════════════
-   3c. COZY LOFI STUDY BEATS (100% Offline Synthesizer)
+   3c. DUOLINGO MULTI-TRACK STUDY MUSIC ENGINE (100% Offline Synthesizer)
+   - Track 1: 'lofi' - Cozy Lofi Beats (Rhodes Piano Chords)
+   - Track 2: 'rain' - Gentle Rain & Cafe (Pink/Brown noise ambiance)
+   - Track 3: 'chiptune' - Kawaii 8-Bit Melody (Animal Crossing/Game Vibes)
+   - Track 4: 'piano' - Peaceful Ghibli Piano (Classical Arpeggios)
    ═══════════════════════════════════════════════════ */
 
-let lofiInterval = null;
-let lofiChordIndex = 0;
+let CURRENT_BGM_TRACK = localStorage.getItem("typocute_bgm_track") || "lofi";
+let CURRENT_BGM_INTERVAL = null;
+let CURRENT_RAIN_NODE = null;
+let bgmChordIndex = 0;
+let bgmPianoIndex = 0;
+let bgmChiptuneIndex = 0;
 
-function toggleLofiMusic() {
-  STATE.lofiPlaying = !STATE.lofiPlaying;
-  const btn = document.getElementById("lofiToggle");
-  if (btn) btn.classList.toggle("active", STATE.lofiPlaying);
-
-  if (STATE.lofiPlaying) {
-    playLofiLoop();
-    lofiInterval = setInterval(playLofiLoop, 2800);
-    setMascot("Lofi Beats on! Sukoon se type karo 🎵", "normal");
-  } else {
-    clearInterval(lofiInterval);
-    lofiInterval = null;
-    setMascot("Music paused 🌸", "normal");
+function toggleMusicPopover(forceState) {
+  const popover = document.getElementById("duoMusicPopover");
+  if (!popover) return;
+  const isShown = popover.style.display !== "none";
+  const shouldShow = forceState !== undefined ? forceState : !isShown;
+  popover.style.display = shouldShow ? "flex" : "none";
+  if (shouldShow) {
+    updateMusicPopoverUI();
   }
 }
 
-function playLofiLoop() {
+function updateMusicPopoverUI() {
+  const tracks = ["lofi", "rain", "chiptune", "piano"];
+  tracks.forEach(t => {
+    const btn = document.getElementById(`dmpBtn-${t}`);
+    const ind = document.getElementById(`dmpInd-${t}`);
+    const isThisActive = STATE.lofiPlaying && CURRENT_BGM_TRACK === t;
+    if (btn) btn.classList.toggle("active", isThisActive);
+    if (ind) ind.textContent = isThisActive ? "▶" : "";
+  });
+
+  const stopBtn = document.getElementById("dmpStopBtn");
+  if (stopBtn) {
+    stopBtn.style.display = STATE.lofiPlaying ? "flex" : "none";
+  }
+}
+
+function selectMusicTrack(trackKey) {
+  CURRENT_BGM_TRACK = trackKey;
+  try { localStorage.setItem("typocute_bgm_track", trackKey); } catch(_) {}
+
+  // Stop any playing audio
+  stopMusicLoopOnly();
+
+  // Start the selected track
+  STATE.lofiPlaying = true;
+  startTrackLoop(trackKey);
+
+  const btn = document.getElementById("lofiToggle");
+  if (btn) {
+    btn.classList.add("active");
+    btn.innerHTML = trackKey === "rain" ? "🌧️" : (trackKey === "piano" ? "🎹" : (trackKey === "chiptune" ? "🎮" : "🎶"));
+  }
+
+  updateMusicPopoverUI();
+  
+  const trackNames = {
+    lofi: "Cozy Lofi Beats ☕",
+    rain: "Gentle Rain & Cafe 🌧️",
+    chiptune: "Kawaii 8-Bit Melody 🎮",
+    piano: "Peaceful Ghibli Piano 🎹"
+  };
+  setMascot(`${trackNames[trackKey] || "Music"} chalu ho gaya! Sukoon se type karo 🌸`, "normal");
+}
+
+function toggleLofiMusic() {
+  if (STATE.lofiPlaying) {
+    // If playing, toggle popover
+    toggleMusicPopover();
+  } else {
+    // If stopped, play current selected track and open popover
+    selectMusicTrack(CURRENT_BGM_TRACK || "lofi");
+    toggleMusicPopover(true);
+  }
+}
+
+function stopMusicTrack() {
+  STATE.lofiPlaying = false;
+  stopMusicLoopOnly();
+
+  const btn = document.getElementById("lofiToggle");
+  if (btn) {
+    btn.classList.remove("active");
+    btn.innerHTML = "🎵";
+  }
+
+  updateMusicPopoverUI();
+  setMascot("Music paused 🌸", "normal");
+}
+
+function stopMusicLoopOnly() {
+  if (CURRENT_BGM_INTERVAL) {
+    clearInterval(CURRENT_BGM_INTERVAL);
+    CURRENT_BGM_INTERVAL = null;
+  }
+  if (CURRENT_RAIN_NODE) {
+    try {
+      CURRENT_RAIN_NODE.stop();
+      CURRENT_RAIN_NODE.disconnect();
+    } catch(_) {}
+    CURRENT_RAIN_NODE = null;
+  }
+}
+
+function startTrackLoop(trackKey) {
+  stopMusicLoopOnly();
   if (!STATE.lofiPlaying) return;
+
+  if (trackKey === "lofi") {
+    playLofiChords();
+    CURRENT_BGM_INTERVAL = setInterval(playLofiChords, 2800);
+  } else if (trackKey === "rain") {
+    playRainAmbiance();
+  } else if (trackKey === "chiptune") {
+    playChiptuneArp();
+    CURRENT_BGM_INTERVAL = setInterval(playChiptuneArp, 2400);
+  } else if (trackKey === "piano") {
+    playPianoArp();
+    CURRENT_BGM_INTERVAL = setInterval(playPianoArp, 3000);
+  }
+}
+
+// 1. Cozy Lofi Chords (Rhodes Warm Chords)
+function playLofiChords() {
+  if (!STATE.lofiPlaying || CURRENT_BGM_TRACK !== "lofi") return;
   try {
     const ctx = getAudioContext();
     const chords = [
@@ -408,9 +513,8 @@ function playLofiLoop() {
       [146.83, 174.61, 220.00, 261.63], // Dm7
       [130.81, 164.81, 196.00, 246.94]  // Cmaj7
     ];
-
-    const currentChord = chords[lofiChordIndex % chords.length];
-    lofiChordIndex++;
+    const currentChord = chords[bgmChordIndex % chords.length];
+    bgmChordIndex++;
 
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
@@ -422,13 +526,12 @@ function playLofiLoop() {
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(filter);
-
       osc.type = "sine";
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
 
       const startTime = ctx.currentTime + idx * 0.05;
       gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.linearRampToValueAtTime(0.04, startTime + 0.35);
+      gain.gain.linearRampToValueAtTime(0.038, startTime + 0.35);
       gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 2.6);
 
       osc.start(startTime);
@@ -436,6 +539,115 @@ function playLofiLoop() {
     });
   } catch (_) {}
 }
+
+// 2. Gentle Rain & Cafe Ambiance (Synthesized Brown Noise)
+function playRainAmbiance() {
+  if (!STATE.lofiPlaying || CURRENT_BGM_TRACK !== "rain") return;
+  try {
+    const ctx = getAudioContext();
+    const bufferSize = ctx.sampleRate * 4;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      output[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = output[i];
+      output[i] *= 3.5;
+    }
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = buffer;
+    noiseSource.loop = true;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(900, ctx.currentTime);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.035, ctx.currentTime);
+
+    noiseSource.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    noiseSource.start();
+    CURRENT_RAIN_NODE = noiseSource;
+  } catch (_) {}
+}
+
+// 3. Kawaii 8-Bit Melody (Animal Crossing / Game Theme)
+function playChiptuneArp() {
+  if (!STATE.lofiPlaying || CURRENT_BGM_TRACK !== "chiptune") return;
+  try {
+    const ctx = getAudioContext();
+    const melodies = [
+      [523.25, 659.25, 783.99, 987.77, 783.99, 659.25, 587.33, 523.25], // C - E - G - B - G - E - D - C
+      [440.00, 523.25, 659.25, 783.99, 659.25, 523.25, 493.88, 440.00]  // A - C - E - G - E - C - B - A
+    ];
+    const notes = melodies[bgmChiptuneIndex % melodies.length];
+    bgmChiptuneIndex++;
+
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.22);
+
+      const startTime = ctx.currentTime + idx * 0.22;
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.035, startTime + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.26);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.28);
+    });
+  } catch (_) {}
+}
+
+// 4. Peaceful Ghibli Piano (Classical Flowing Arpeggios)
+function playPianoArp() {
+  if (!STATE.lofiPlaying || CURRENT_BGM_TRACK !== "piano") return;
+  try {
+    const ctx = getAudioContext();
+    const chords = [
+      [293.66, 369.99, 440.00, 587.33], // D - F# - A - D5
+      [277.18, 329.63, 440.00, 554.37], // C# - E - A - C#5
+      [246.94, 293.66, 369.99, 493.88], // B - D - F# - B
+      [196.00, 246.94, 293.66, 392.00]  // G - B - D - G
+    ];
+    const chord = chords[bgmPianoIndex % chords.length];
+    bgmPianoIndex++;
+
+    chord.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.35);
+
+      const startTime = ctx.currentTime + idx * 0.35;
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.042, startTime + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.6);
+
+      osc.start(startTime);
+      osc.stop(startTime + 1.7);
+    });
+  } catch (_) {}
+}
+
+// Close popover when clicking anywhere outside
+document.addEventListener("click", (e) => {
+  const wrapper = document.getElementById("duoMusicWrapper");
+  if (wrapper && !wrapper.contains(e.target)) {
+    toggleMusicPopover(false);
+  }
+});
 
 /* ═══════════════════════════════════════════════════
    4. HYBRID NEURAL AUDIO ENGINE (English + Hindi Duolingo Duo Voice)
@@ -818,7 +1030,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111509; // Matches version.json build 2026111509 (v2.5.3 Clean Duolingo UI & Audio Controls)
+const CURRENT_APP_BUILD = 2026111510; // Matches version.json build 2026111510 (v2.6.0 Duolingo Multi-Track Music Engine)
 
 async function checkForWebUpdates() {
   try {
