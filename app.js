@@ -459,18 +459,33 @@ const LOCAL_AUDIO_SET = new Set([
 ]);
 
 let CURRENT_AUDIO_PLAYING = null;
+let CURRENT_SPEECH_TIMER = null;
+let CURRENT_AUDIO_SESSION_ID = 0;
 
 function stopCurrentAudio() {
+  CURRENT_AUDIO_SESSION_ID++; // Invalidate any pending callbacks, fallback attempts, or sequence timers!
+
+  if (CURRENT_SPEECH_TIMER) {
+    clearTimeout(CURRENT_SPEECH_TIMER);
+    CURRENT_SPEECH_TIMER = null;
+  }
+
   if (CURRENT_AUDIO_PLAYING) {
     try {
+      // Detach listeners first so pause/abort doesn't trigger phantom callbacks
+      CURRENT_AUDIO_PLAYING.onplay = null;
+      CURRENT_AUDIO_PLAYING.onended = null;
+      CURRENT_AUDIO_PLAYING.onerror = null;
       CURRENT_AUDIO_PLAYING.pause();
       CURRENT_AUDIO_PLAYING.currentTime = 0;
     } catch(e) {}
     CURRENT_AUDIO_PLAYING = null;
   }
+
   if ("speechSynthesis" in window) {
     try { window.speechSynthesis.cancel(); } catch(e) {}
   }
+
   // Clear any playing-audio classes from pills
   document.getElementById("speakBtn")?.classList.remove("playing-audio");
   document.getElementById("speakHindiBtn")?.classList.remove("playing-audio");
@@ -513,7 +528,7 @@ function cleanHindiForSpeech(text) {
  * Universal voice player:
  * 1. Checks local pre-bundled neural audio (instant offline)
  * 2. If not local, streams real Google neural human voice (online)
- * 3. If stream fails or device is offline, falls back immediately to SpeechSynthesis
+ * 3. If stream fails or device is offline, falls back immediately to SpeechSynthesis (strictly once!)
  */
 function playAudioVoice({ text, lang, isSlow = false, baseWord = "", onStart, onEnd }) {
   if (!STATE.soundEnabled) {
@@ -522,6 +537,7 @@ function playAudioVoice({ text, lang, isSlow = false, baseWord = "", onStart, on
   }
 
   stopCurrentAudio();
+  const sessionId = CURRENT_AUDIO_SESSION_ID; // Locks this specific playback session
 
   const cleanText = lang === "hi" ? cleanHindiForSpeech(text) : (text || "").replace(/[^a-zA-Z0-9\s]/g, "").trim();
   if (!cleanText) {
@@ -540,31 +556,45 @@ function playAudioVoice({ text, lang, isSlow = false, baseWord = "", onStart, on
   // Google neural stream URL
   const googleStreamUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${lang}&client=tw-ob`;
 
-  // Fallback to browser SpeechSynthesis
+  // Fallback to browser SpeechSynthesis (Guaranteed to execute at most ONCE)
+  let fallbackAttempted = false;
   function doSpeechSynthesisFallback() {
+    if (fallbackAttempted || sessionId !== CURRENT_AUDIO_SESSION_ID) return;
+    fallbackAttempted = true;
+
     if (!("speechSynthesis" in window)) {
-      if (onEnd) onEnd();
+      if (sessionId === CURRENT_AUDIO_SESSION_ID && onEnd) onEnd();
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    if (lang === "hi") {
-      utterance.lang = "hi-IN";
-      utterance.rate = 0.92;
-      utterance.pitch = 1.0;
-      const v = getBestVoice("hi");
-      if (v) { utterance.voice = v; utterance.lang = v.lang; }
-    } else {
-      utterance.lang = "en-US";
-      utterance.rate = isSlow ? 0.55 : (STATE.speechRate || 0.95);
-      utterance.pitch = isSlow ? 1.05 : 1.0;
-      const v = getBestVoice("en");
-      if (v) { utterance.voice = v; utterance.lang = v.lang; }
-    }
 
-    if (onStart) onStart();
-    utterance.onend = () => { if (onEnd) onEnd(); };
-    utterance.onerror = () => { if (onEnd) onEnd(); };
-    window.speechSynthesis.speak(utterance);
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      if (lang === "hi") {
+        utterance.lang = "hi-IN";
+        utterance.rate = 0.92;
+        utterance.pitch = 1.0;
+        const v = getBestVoice("hi");
+        if (v) { utterance.voice = v; utterance.lang = v.lang; }
+      } else {
+        utterance.lang = "en-US";
+        utterance.rate = isSlow ? 0.55 : (STATE.speechRate || 0.95);
+        utterance.pitch = isSlow ? 1.05 : 1.0;
+        const v = getBestVoice("en");
+        if (v) { utterance.voice = v; utterance.lang = v.lang; }
+      }
+
+      if (onStart && sessionId === CURRENT_AUDIO_SESSION_ID) onStart();
+      utterance.onend = () => {
+        if (sessionId === CURRENT_AUDIO_SESSION_ID && onEnd) onEnd();
+      };
+      utterance.onerror = () => {
+        if (sessionId === CURRENT_AUDIO_SESSION_ID && onEnd) onEnd();
+      };
+      window.speechSynthesis.speak(utterance);
+    } catch(e) {
+      if (sessionId === CURRENT_AUDIO_SESSION_ID && onEnd) onEnd();
+    }
   }
 
   // Target URL: local first, then stream (if online)
@@ -582,20 +612,20 @@ function playAudioVoice({ text, lang, isSlow = false, baseWord = "", onStart, on
 
     let hasEnded = false;
     const safeEnd = () => {
-      if (hasEnded) return;
+      if (hasEnded || sessionId !== CURRENT_AUDIO_SESSION_ID) return;
       hasEnded = true;
       if (CURRENT_AUDIO_PLAYING === audio) CURRENT_AUDIO_PLAYING = null;
       if (onEnd) onEnd();
     };
 
     audio.onplay = () => {
-      if (onStart) onStart();
+      if (sessionId === CURRENT_AUDIO_SESSION_ID && onStart) onStart();
     };
 
     audio.onended = safeEnd;
 
     audio.onerror = () => {
-      // Local or remote error -> graceful fallback
+      if (sessionId !== CURRENT_AUDIO_SESSION_ID) return;
       CURRENT_AUDIO_PLAYING = null;
       doSpeechSynthesisFallback();
     };
@@ -603,7 +633,7 @@ function playAudioVoice({ text, lang, isSlow = false, baseWord = "", onStart, on
     const playPromise = audio.play();
     if (playPromise !== undefined) {
       playPromise.catch(err => {
-        // Autoplay or network block -> fallback immediately
+        if (sessionId !== CURRENT_AUDIO_SESSION_ID) return;
         CURRENT_AUDIO_PLAYING = null;
         doSpeechSynthesisFallback();
       });
@@ -667,6 +697,9 @@ function speakWordAndHindi(englishText, hindiText, isSlow = false) {
     return;
   }
 
+  stopCurrentAudio();
+  const pairSessionId = CURRENT_AUDIO_SESSION_ID; // Pin this whole duo sequence
+
   const speakBtn = document.getElementById("speakBtn");
   const hiBtn    = document.getElementById("speakHindiBtn");
 
@@ -676,21 +709,29 @@ function speakWordAndHindi(englishText, hindiText, isSlow = false) {
     lang: "en",
     isSlow: isSlow,
     baseWord: cleanEn,
-    onStart: () => { speakBtn?.classList.add("playing-audio"); },
+    onStart: () => {
+      if (pairSessionId === CURRENT_AUDIO_SESSION_ID) speakBtn?.classList.add("playing-audio");
+    },
     onEnd: () => {
       speakBtn?.classList.remove("playing-audio");
 
-      // Step 2: If Hindi meaning exists, pause 220ms then play Hindi!
-      if (cleanHi) {
-        setTimeout(() => {
-          if (!STATE.soundEnabled) return;
+      // Step 2: If Hindi exists and session is still active, play Hindi after 220ms
+      if (cleanHi && pairSessionId === CURRENT_AUDIO_SESSION_ID) {
+        if (CURRENT_SPEECH_TIMER) clearTimeout(CURRENT_SPEECH_TIMER);
+        CURRENT_SPEECH_TIMER = setTimeout(() => {
+          CURRENT_SPEECH_TIMER = null;
+          if (!STATE.soundEnabled || pairSessionId !== CURRENT_AUDIO_SESSION_ID) return;
           playAudioVoice({
             text: cleanHi,
             lang: "hi",
             isSlow: false,
             baseWord: cleanEn,
-            onStart: () => { hiBtn?.classList.add("playing-audio"); },
-            onEnd: () => { hiBtn?.classList.remove("playing-audio"); }
+            onStart: () => {
+              if (pairSessionId === CURRENT_AUDIO_SESSION_ID) hiBtn?.classList.add("playing-audio");
+            },
+            onEnd: () => {
+              hiBtn?.classList.remove("playing-audio");
+            }
           });
         }, 220);
       }
@@ -777,7 +818,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111505; // Matches version.json build 2026111505
+const CURRENT_APP_BUILD = 2026111506; // Matches version.json build 2026111506
 
 async function checkForWebUpdates() {
   try {
@@ -2045,10 +2086,20 @@ function loadItem(index) {
     setupTilesView();
   } else {
     // In Chhote Shabd (small words), speak both English and Hindi!
+    if (CURRENT_SPEECH_TIMER) {
+      clearTimeout(CURRENT_SPEECH_TIMER);
+      CURRENT_SPEECH_TIMER = null;
+    }
     if (typeof CURRENT_SIMPLIFIED_MODE === "undefined" || CURRENT_SIMPLIFIED_MODE === "small_words") {
-      setTimeout(() => speakWordAndHindi(STATE.targetText, STATE.targetHindi, false), 150);
+      CURRENT_SPEECH_TIMER = setTimeout(() => {
+        CURRENT_SPEECH_TIMER = null;
+        speakWordAndHindi(STATE.targetText, STATE.targetHindi, false);
+      }, 150);
     } else {
-      setTimeout(() => speakWord(STATE.targetText, false), 150);
+      CURRENT_SPEECH_TIMER = setTimeout(() => {
+        CURRENT_SPEECH_TIMER = null;
+        speakWord(STATE.targetText, false);
+      }, 150);
     }
   }
 }
