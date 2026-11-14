@@ -543,17 +543,29 @@ function initCloudConnectionSync() {
 
 function updateConnectionStatus() {
   const badge = document.getElementById("liveConnectionBadge");
-  if (!badge) return;
+  const menuIcon = document.getElementById("menuConnIcon");
+  const menuTitle = document.getElementById("menuConnTitle");
+  const menuSub = document.getElementById("menuConnSub");
 
   if (navigator.onLine) {
-    badge.className = "badge-offline badge-cloud-online";
-    badge.innerHTML = "☁️ <span>Cloud Connected</span>";
-    badge.title = "Server se live connected hai! Naye updates background me automatically aate rahenge.";
+    if (badge) {
+      badge.className = "badge-conn-pill online";
+      badge.innerHTML = "☁️";
+      badge.title = "Cloud Connected (Online & Auto-updates enabled)";
+    }
+    if (menuIcon) menuIcon.textContent = "☁️";
+    if (menuTitle) menuTitle.textContent = "Cloud Connected";
+    if (menuSub) menuSub.textContent = "Auto-updating enabled";
     checkForWebUpdates();
   } else {
-    badge.className = "badge-offline badge-local-offline";
-    badge.innerHTML = "🟢 <span>100% Offline</span>";
-    badge.title = "Internet nahi hai — par koi baat nahi, sabhi lessons aur features 100% offline chalte rahenge!";
+    if (badge) {
+      badge.className = "badge-conn-pill offline";
+      badge.innerHTML = "🟢";
+      badge.title = "100% Offline Mode (Bina internet ke chal raha hai)";
+    }
+    if (menuIcon) menuIcon.textContent = "🟢";
+    if (menuTitle) menuTitle.textContent = "100% Offline Ready";
+    if (menuSub) menuSub.textContent = "Bina internet sabhi lessons chalenge";
   }
 }
 
@@ -4112,11 +4124,10 @@ function updateLifetimeProgress() {
   if (!el) return;
   if (CURRENT_SIMPLIFIED_MODE === "small_words") {
     const done = INFINITE_PROGRESS.completedWords.length;
-    const total = getAll10kWords().length;
-    el.textContent = `${STATE.itemIndex + 1} / ${STATE.currentItems.length} • ✅ ${done}/${total} Mixed Words`;
+    el.textContent = `${STATE.itemIndex + 1}/${STATE.currentItems.length} • ✅ ${done} Words`;
   } else {
     const done = INFINITE_PROGRESS.completedParas.length;
-    el.textContent = `${STATE.itemIndex + 1} / ${STATE.currentItems.length} • ✅ ${done}/${getAllParagraphs().length} Essays (No Repeats)`;
+    el.textContent = `${STATE.itemIndex + 1}/${STATE.currentItems.length} • ✅ ${done}/30 Essays`;
   }
 }
 
@@ -4449,6 +4460,33 @@ function closeProgressTrackerModal() {
 window.openProgressTrackerModal = openProgressTrackerModal;
 window.closeProgressTrackerModal = closeProgressTrackerModal;
 window.loadDirectParagraph = loadDirectParagraph;
+
+/* ── Top Header Menu Dropdown ── */
+function toggleHeaderMenu() {
+  const menu = document.getElementById("headerMenuDropdown");
+  if (!menu) return;
+  if (menu.style.display === "none" || menu.style.display === "") {
+    menu.style.display = "flex";
+  } else {
+    menu.style.display = "none";
+  }
+}
+
+function closeHeaderMenu() {
+  const menu = document.getElementById("headerMenuDropdown");
+  if (menu) menu.style.display = "none";
+}
+
+window.toggleHeaderMenu = toggleHeaderMenu;
+window.closeHeaderMenu = closeHeaderMenu;
+
+// Close menu when clicking outside
+document.addEventListener("click", (e) => {
+  const container = document.querySelector(".header-menu-container");
+  if (container && !container.contains(e.target)) {
+    closeHeaderMenu();
+  }
+});
 
 /* ═══════════════════════════════════════════════════
    PWA & NATIVE DESKTOP APPLICATION INSTALLATION

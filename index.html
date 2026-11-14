@@ -28,29 +28,59 @@
         <span>🌸 1. Chhote Shabd</span>
       </button>
       <button class="two-mode-btn" id="btnMode50Words" title="2. 50-Word Paragraphs (बड़ा पैराग्राफ)">
-        <span>📝 2. 50-Word Paragraphs</span>
+        <span>📝 2. Paragraphs</span>
       </button>
       <button class="two-mode-btn" id="btnModeVocabStudio" title="3. Shabd Gyan & Test (Word Quiz & Dictionary)">
-        <span>🎯 3. Shabd Test & Gyan</span>
+        <span>🎯 3. Shabd Test</span>
       </button>
     </div>
     <div class="header-badges">
       <span class="badge-gem">💎 <span id="headerGems">15</span></span>
       <span class="badge-xp">⭐ <span id="headerXp">0</span> XP</span>
-      <span class="badge-offline" id="liveConnectionBadge">🟢 100% Offline</span>
-      <span class="badge-streak" id="headerStreak">🍓 1 Day Streak</span>
-      <button class="badge-quiz-btn" id="btnHeaderQuiz" type="button" title="Word Meanings & Vocab Test (शब्द ज्ञान और क्विज टेस्ट)">
-        🎯 <span>Shabd Test</span>
-      </button>
-      <button class="badge-reset-btn" id="btnHeaderReset" type="button" title="Saari Progress Reset Karein (Nayi Shuruat)" onclick="resetAllProgress()">
-        🔄 <span>Reset</span>
-      </button>
+      <span class="badge-streak" id="headerStreak">🍓 1 Day</span>
+      <span class="badge-conn-pill" id="liveConnectionBadge" title="Server Connection Status">☁️</span>
       <button class="badge-tracker-btn" id="btnHeaderTracker" type="button" title="Progress Tracker & Roadmap (कहाँ तक पहुँचे)" onclick="openProgressTrackerModal()">
         📊 <span>Progress</span>
       </button>
-      <button class="badge-install-btn" id="btnHeaderInstallApp" type="button" title="Laptop Me TypoCute App Install Karein" onclick="triggerAppInstall()">
-        📲 <span>Install App</span>
-      </button>
+
+      <!-- Clean Settings & Tools Menu -->
+      <div class="header-menu-container">
+        <button class="badge-menu-btn" id="btnHeaderMenu" type="button" title="Settings & Tools (Menu)" onclick="toggleHeaderMenu()">
+          ⚙️ <span>Menu</span>
+        </button>
+        <div class="header-menu-dropdown" id="headerMenuDropdown" style="display:none;">
+          <button class="hmd-item" type="button" onclick="triggerAppInstall(); closeHeaderMenu();">
+            <span class="hmd-icon">📲</span>
+            <div class="hmd-text">
+              <strong>Laptop Me Install Karein</strong>
+              <small>Real Desktop App (PWA / .exe)</small>
+            </div>
+          </button>
+          <button class="hmd-item" type="button" onclick="openProgressTrackerModal(); closeHeaderMenu();">
+            <span class="hmd-icon">📊</span>
+            <div class="hmd-text">
+              <strong>Progress & Roadmap</strong>
+              <small>30 Essays Checklist & Backup</small>
+            </div>
+          </button>
+          <div class="hmd-divider"></div>
+          <div class="hmd-status-item">
+            <span class="hmd-icon" id="menuConnIcon">☁️</span>
+            <div class="hmd-text">
+              <strong id="menuConnTitle">Cloud Connected</strong>
+              <small id="menuConnSub">Auto-updating enabled</small>
+            </div>
+          </div>
+          <div class="hmd-divider"></div>
+          <button class="hmd-item danger" type="button" onclick="resetAllProgress(); closeHeaderMenu();">
+            <span class="hmd-icon">🔄</span>
+            <div class="hmd-text">
+              <strong>Reset Progress</strong>
+              <small>Nayi shuruat (0 XP se start)</small>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
