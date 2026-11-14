@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypoCute 🌸 English Typing & Learning (Duolingo Edition)</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="app_icon.png">
+  <meta name="theme-color" content="#f472b6">
+  <meta name="application-name" content="TypoCute">
+  <meta name="apple-mobile-web-app-title" content="TypoCute">
+</head>
+
+<body>
+
+  <!-- Hidden Input for keystroke capture -->
+  <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+    aria-hidden="true">
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand">🎀 <span>TypoCute</span> <span class="edition-badge">🌸 Duolingo Edition</span></div>
+    <!-- 2 Simple Types: Small Words vs 50-Word Paragraphs -->
+    <div class="two-mode-toggle" id="twoModeToggle">
+      <button class="two-mode-btn active" id="btnModeSmallWords" title="1. Chhote Shabd (Small Words Practice)">
+        <span>🌸 1. Chhote Shabd</span>
+      </button>
+      <button class="two-mode-btn" id="btnMode50Words" title="2. 50-Word Paragraphs (बड़ा पैराग्राफ)">
+        <span>📝 2. 50-Word Paragraphs</span>
+      </button>
+      <button class="two-mode-btn" id="btnModeVocabStudio" title="3. Shabd Gyan & Test (Word Quiz & Dictionary)">
+        <span>🎯 3. Shabd Test & Gyan</span>
+      </button>
+    </div>
+    <div class="header-badges">
+      <span class="badge-gem">💎 <span id="headerGems">15</span></span>
+      <span class="badge-xp">⭐ <span id="headerXp">0</span> XP</span>
+      <span class="badge-offline">🟢 100% Offline</span>
+      <span class="badge-streak" id="headerStreak">🍓 1 Day Streak</span>
+      <button class="badge-quiz-btn" id="btnHeaderQuiz" type="button" title="Word Meanings & Vocab Test (शब्द ज्ञान और क्विज टेस्ट)">
+        🎯 <span>Shabd Test</span>
+      </button>
+      <button class="badge-reset-btn" id="btnHeaderReset" type="button" title="Saari Progress Reset Karein (Nayi Shuruat)" onclick="resetAllProgress()">
+        🔄 <span>Reset</span>
+      </button>
+      <button class="badge-tracker-btn" id="btnHeaderTracker" type="button" title="Progress Tracker & Roadmap (कहाँ तक पहुँचे)" onclick="openProgressTrackerModal()">
+        📊 <span>Progress</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- TAB: ARENA (Duolingo Lesson Experience) -->
+    <section class="tab-pane active" id="tab-arena">
+
+      <!-- 1. Duolingo Lesson Top Bar -->
+      <div class="duo-lesson-header">
+        <button class="duo-exit-btn" id="duoExitBtn" style="display:none;">✕</button>
+
+        <div class="duo-progress-wrapper">
+          <div class="duo-progress-bar">
+            <div class="duo-progress-juice" id="progressBarFill" style="width: 10%;">
+              <div class="duo-progress-highlight"></div>
+            </div>
+          </div>
+          <span class="duo-progress-count" id="progressCount" title="Click karke dekhein kahan tak progress hui hai" onclick="openProgressTrackerModal()" style="cursor:pointer;">1 / 10</span>
+        </div>
+
+        <div class="duo-header-metrics">
+          <div class="duo-pill duo-hearts-pill" id="heartsPill" title="Unlimited Practice Mode (No Hearts Limit)">
+            <span class="duo-heart-beat">💖</span>
+            <span id="liveHearts">∞</span>
+          </div>
+          <div class="duo-pill duo-combo-pill" id="comboPill" title="Keystroke Combo">
+            <span>🔥</span>
+            <span id="comboCount">0</span>x
+          </div>
+          <div class="duo-pill duo-wpm-pill" title="Typing Speed">
+            <span>⚡</span>
+            <span id="liveWpm">0</span> <small>WPM</small>
+          </div>
+          <button class="duo-sound-btn active" id="soundToggle" title="Sound Effects Profile">🔊</button>
+          <button class="duo-sound-btn" id="lofiToggle" title="Cozy Lofi Study Beats (100% Offline 🎵)">🎵</button>
+        </div>
+      </div>
+
+      <!-- 2. Simple Practice Topic Selector Bar -->
+      <div class="practice-topic-selector-row" id="practiceTopicSelectorRow">
+        <!-- Populated dynamically by JS for Small Words or 50-Word Paragraphs -->
+      </div>
+      <span class="duo-lesson-title-hidden" id="lessonTitle" style="display:none;"></span>
+      <span class="duo-lesson-chip" id="lessonHindiHint" style="display:none;"></span>
+      <span class="duo-task-badge" id="duoTaskBadge" style="display:none;"></span>
+
+      <!-- Floating Kawaii Ambient Particles (Sakura, Hearts, Stars) -->
+      <div class="kawaii-ambient-particles" aria-hidden="true">
+        <span class="kawaii-p p-1">🌸</span>
+        <span class="kawaii-p p-2">💖</span>
+        <span class="kawaii-p p-3">✨</span>
+        <span class="kawaii-p p-4">🌸</span>
+        <span class="kawaii-p p-5">⭐</span>
+        <span class="kawaii-p p-6">💕</span>
+      </div>
+
+      <!-- 3. Duolingo Main Stage (Spacious, Elevated, Kawaii Duo Mascot + Prompt + Answer Card) -->
+      <div class="duo-center-stage duo-duolingo-stage" id="typingContainer">
+        <!-- Floating XP Layer for +10 / +20 XP animations -->
+        <div class="floating-xp-layer" id="floatingXpLayer"></div>
+
+        <div class="duo-stage-top">
+          <!-- Mascot Duo: Hello Kitty + Mimi Bunny Cheering Together! -->
+          <div class="duo-mascot-duo" id="mascotCompanion">
+            <!-- Animated Hello Kitty -->
+            <div class="mascot-char char-kitty" id="kittyFigure" title="Hello Kitty cheerleader! 🎀">
+              <svg class="kitty-svg" viewBox="0 0 100 100" width="70" height="70">
+                <defs>
+                  <linearGradient id="kittyBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fb7185" />
+                    <stop offset="100%" stop-color="#e11d48" />
+                  </linearGradient>
+                  <linearGradient id="kittyDressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f472b6" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                </defs>
+                <!-- Kitty Ears -->
+                <polygon points="26,38 31,14 46,26" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5"
+                  stroke-linejoin="round" />
+                <polygon points="74,38 69,14 54,26" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5"
+                  stroke-linejoin="round" />
+                <polygon points="30,34 33,20 42,27" fill="#fce7f3" />
+                <polygon points="70,34 67,20 58,27" fill="#fce7f3" />
+                <!-- Kitty Head -->
+                <ellipse cx="50" cy="50" rx="34" ry="26" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <!-- Iconic 3D Bow -->
+                <g class="kitty-bow">
+                  <ellipse cx="64" cy="30" rx="9" ry="6" fill="url(#kittyBowGrad)" stroke="#be123c" stroke-width="1.5"
+                    transform="rotate(-25 64 30)" />
+                  <ellipse cx="80" cy="36" rx="9" ry="6" fill="url(#kittyBowGrad)" stroke="#be123c" stroke-width="1.5"
+                    transform="rotate(35 80 36)" />
+                  <circle cx="72" cy="33" r="5" fill="#be123c" />
+                  <circle cx="71" cy="32" r="1.5" fill="#ffffff" />
+                </g>
+                <!-- Blinking Eyes -->
+                <g class="kitty-eyes">
+                  <ellipse class="kitty-eye eye-l" cx="37" cy="50" rx="3" ry="4.5" fill="#1e1b4b" />
+                  <ellipse class="kitty-eye eye-r" cx="63" cy="50" rx="3" ry="4.5" fill="#1e1b4b" />
+                </g>
+                <!-- Button Nose -->
+                <ellipse cx="50" cy="56" rx="3.5" ry="2.5" fill="#facc15" stroke="#ca8a04" stroke-width="0.8" />
+                <!-- Rosy Cheeks -->
+                <circle cx="28" cy="55" r="4.5" fill="#fbcfe8" opacity="0.85" />
+                <circle cx="72" cy="55" r="4.5" fill="#fbcfe8" opacity="0.85" />
+                <!-- Whiskers -->
+                <line x1="17" y1="48" x2="29" y2="50" stroke="#1e1b4b" stroke-width="1.8" stroke-linecap="round" />
+                <line x1="15" y1="55" x2="28" y2="55" stroke="#1e1b4b" stroke-width="1.8" stroke-linecap="round" />
+                <line x1="17" y1="62" x2="29" y2="60" stroke="#1e1b4b" stroke-width="1.8" stroke-linecap="round" />
+                <line x1="83" y1="48" x2="71" y2="50" stroke="#1e1b4b" stroke-width="1.8" stroke-linecap="round" />
+                <line x1="85" y1="55" x2="72" y2="55" stroke="#1e1b4b" stroke-width="1.8" stroke-linecap="round" />
+                <line x1="83" y1="62" x2="71" y2="60" stroke="#1e1b4b" stroke-width="1.8" stroke-linecap="round" />
+                <!-- Dress & Body -->
+                <path d="M35,74 Q50,71 65,74 L68,88 Q50,91 32,88 Z" fill="url(#kittyDressGrad)" stroke="#db2777"
+                  stroke-width="1.5" />
+                <ellipse cx="50" cy="74" rx="7" ry="3" fill="#ffffff" />
+                <!-- Waving Left Paw -->
+                <g class="kitty-paw-wave">
+                  <ellipse cx="27" cy="78" rx="5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.5"
+                    transform="rotate(-30 27 78)" />
+                </g>
+                <!-- Right Paw -->
+                <ellipse cx="73" cy="80" rx="5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.5" />
+              </svg>
+              <span class="char-pill-label">🎀 Kitty</span>
+            </div>
+
+            <!-- Animated Mimi Bunny -->
+            <div class="mascot-char char-mimi" id="mascotFigure" title="Mimi Bunny guide! 🐰">
+              <svg class="mimi-svg" viewBox="0 0 100 100" width="72" height="72">
+                <!-- Ears -->
+                <ellipse class="mimi-ear mimi-ear-l" cx="36" cy="18" rx="7.5" ry="19" fill="#ffffff" stroke="#fbcfe8"
+                  stroke-width="2.5" />
+                <ellipse cx="36" cy="18" rx="4.5" ry="13" fill="#f472b6" />
+                <ellipse class="mimi-ear mimi-ear-r" cx="64" cy="18" rx="7.5" ry="19" fill="#ffffff" stroke="#fbcfe8"
+                  stroke-width="2.5" />
+                <ellipse cx="64" cy="18" rx="4.5" ry="13" fill="#f472b6" />
+                <!-- Head & Body -->
+                <circle cx="50" cy="56" r="30" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <!-- Glowing Cheeks -->
+                <circle class="mimi-blush" cx="32" cy="63" r="6" fill="#fbcfe8" />
+                <circle class="mimi-blush" cx="68" cy="63" r="6" fill="#fbcfe8" />
+                <!-- Anime Sparkling Eyes -->
+                <g class="mimi-eyes">
+                  <ellipse class="mimi-eye eye-l" cx="39" cy="52" rx="4.5" ry="5.5" fill="#881337" />
+                  <circle cx="41" cy="49.5" r="2" fill="#ffffff" />
+                  <circle cx="37.5" cy="54.5" r="1" fill="#ffffff" />
+                  <ellipse class="mimi-eye eye-r" cx="61" cy="52" rx="4.5" ry="5.5" fill="#881337" />
+                  <circle cx="63" cy="49.5" r="2" fill="#ffffff" />
+                  <circle cx="59.5" cy="54.5" r="1" fill="#ffffff" />
+                </g>
+                <!-- Nose & Smile -->
+                <polygon points="50,59 47,57 53,57" fill="#ec4899" />
+                <path d="M46,62 Q50,66 54,62" fill="none" stroke="#881337" stroke-width="2" stroke-linecap="round" />
+                <!-- Flower Hairclip -->
+                <circle cx="66" cy="34" r="3.5" fill="#fde047" />
+                <circle cx="62" cy="32" r="3" fill="#f472b6" />
+                <circle cx="70" cy="32" r="3" fill="#f472b6" />
+                <circle cx="64" cy="37" r="3" fill="#f472b6" />
+                <circle cx="68" cy="37" r="3" fill="#f472b6" />
+                <!-- Strawberry Paws -->
+                <ellipse cx="36" cy="74" rx="4.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.5" />
+                <ellipse cx="64" cy="74" rx="4.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.5" />
+                <path d="M47,72 Q50,68 53,72 L51.5,78 Q50,80 48.5,78 Z" fill="#ef4444" />
+                <circle cx="50" cy="70" r="1.5" fill="#22c55e" />
+              </svg>
+              <span class="char-pill-label">🐰 Mimi</span>
+            </div>
+            <div class="mascot-speech-tag" id="mascotBubble">Let's learn! 🌸</div>
+          </div>
+
+          <!-- Duolingo Cartoon Speech Bubble with Audio & Meaning -->
+          <div class="duo-speech-bubble-wrapper">
+            <!-- Peeking Hello Kitty on Speech Bubble -->
+            <div class="kitty-peeker kitty-peeker-bubble" id="kittyPeekerBubble"
+              title="Hello Kitty peeking from speech bubble! 🎀">
+              <svg viewBox="0 0 76 50" width="44" height="29" class="kitty-peeker-svg">
+                <defs>
+                  <linearGradient id="kpbBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fb7185" />
+                    <stop offset="100%" stop-color="#e11d48" />
+                  </linearGradient>
+                </defs>
+                <polygon points="16,25 21,5 34,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"
+                  stroke-linejoin="round" />
+                <polygon points="60,25 55,5 42,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"
+                  stroke-linejoin="round" />
+                <polygon points="19,21 22,11 31,18" fill="#fce7f3" />
+                <polygon points="57,21 54,11 45,18" fill="#fce7f3" />
+                <ellipse cx="38" cy="27" rx="26" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2" />
+                <g class="kitty-bow">
+                  <ellipse cx="50" cy="13" rx="6.5" ry="4.2" fill="url(#kpbBowGrad)" stroke="#be123c" stroke-width="1.2"
+                    transform="rotate(-25 50 13)" />
+                  <ellipse cx="61" cy="17" rx="6.5" ry="4.2" fill="url(#kpbBowGrad)" stroke="#be123c" stroke-width="1.2"
+                    transform="rotate(35 61 17)" />
+                  <circle cx="55" cy="15" r="3.8" fill="#be123c" />
+                  <circle cx="54" cy="14" r="1.1" fill="#ffffff" />
+                </g>
+                <g class="kitty-eyes">
+                  <ellipse class="kitty-eye eye-l" cx="28" cy="27" rx="2.4" ry="3.6" fill="#1e1b4b" />
+                  <ellipse class="kitty-eye eye-r" cx="48" cy="27" rx="2.4" ry="3.6" fill="#1e1b4b" />
+                </g>
+                <ellipse cx="38" cy="32" rx="2.8" ry="1.9" fill="#facc15" stroke="#ca8a04" stroke-width="0.7" />
+                <circle cx="21" cy="32" r="3.2" fill="#fbcfe8" opacity="0.9" />
+                <circle cx="55" cy="32" r="3.2" fill="#fbcfe8" opacity="0.9" />
+                <line x1="12" y1="26" x2="21" y2="28" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="10" y1="32" x2="20" y2="32" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="12" y1="37" x2="21" y2="35" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="64" y1="26" x2="55" y2="28" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="66" y1="32" x2="56" y2="32" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="64" y1="37" x2="55" y2="35" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <g class="kitty-peeker-paws">
+                  <ellipse cx="26" cy="44" rx="5.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.4" />
+                  <line x1="24" y1="43" x2="24" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                  <line x1="28" y1="43" x2="28" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                  <ellipse cx="50" cy="44" rx="5.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.4" />
+                  <line x1="48" y1="43" x2="48" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                  <line x1="52" y1="43" x2="52" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                </g>
+              </svg>
+            </div>
+            <div class="duo-speech-bubble" id="duoSpeechBubble">
+              <div class="duo-bubble-content">
+                <!-- Audio actions (hidden in 50-word mode, shown in small words) -->
+                <div class="duo-audio-actions" id="duoAudioActions">
+                  <button class="duo-audio-btn speaker-btn" id="speakBtn" title="Pronounce normal speed">🔊</button>
+                  <button class="duo-audio-btn turtle-btn" id="turtleSpeakBtn"
+                    title="Duolingo Turtle (Slow pronunciation 🐢)">🐢</button>
+                </div>
+                <div class="duo-prompt-info">
+                  <div class="duo-prompt-category-tag" id="promptCategoryTag" style="display:none;">🌸 50-Word Essay
+                    Translation (हिन्दी अनुवाद)</div>
+                  <div class="duo-prompt-hindi" id="hindiMeaningText">माँ / माता जी</div>
+                  <div class="duo-prompt-pronounce" id="promptPronounce">[ Mother • मदर ]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- The Duolingo Elevated Typing Answer Zone -->
+        <div class="duo-answer-zone">
+          <!-- 1. Keyboard Typing Letters Display (Duolingo Card) -->
+          <div class="typing-core duo-typing-card" id="typingCore">
+            <!-- Peeking Hello Kitty resting paws on the top edge of typing card -->
+            <div class="kitty-peeker kitty-peeker-card" id="kittyPeekerCard"
+              title="Hello Kitty peeking over your typing card! 🎀">
+              <svg viewBox="0 0 76 50" width="54" height="36" class="kitty-peeker-svg">
+                <defs>
+                  <linearGradient id="kpcBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fb7185" />
+                    <stop offset="100%" stop-color="#e11d48" />
+                  </linearGradient>
+                </defs>
+                <polygon points="16,25 21,5 34,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"
+                  stroke-linejoin="round" />
+                <polygon points="60,25 55,5 42,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"
+                  stroke-linejoin="round" />
+                <polygon points="19,21 22,11 31,18" fill="#fce7f3" />
+                <polygon points="57,21 54,11 45,18" fill="#fce7f3" />
+                <ellipse cx="38" cy="27" rx="26" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2" />
+                <g class="kitty-bow">
+                  <ellipse cx="50" cy="13" rx="6.5" ry="4.2" fill="url(#kpcBowGrad)" stroke="#be123c" stroke-width="1.2"
+                    transform="rotate(-25 50 13)" />
+                  <ellipse cx="61" cy="17" rx="6.5" ry="4.2" fill="url(#kpcBowGrad)" stroke="#be123c" stroke-width="1.2"
+                    transform="rotate(35 61 17)" />
+                  <circle cx="55" cy="15" r="3.8" fill="#be123c" />
+                  <circle cx="54" cy="14" r="1.1" fill="#ffffff" />
+                </g>
+                <g class="kitty-eyes">
+                  <ellipse class="kitty-eye eye-l" cx="28" cy="27" rx="2.4" ry="3.6" fill="#1e1b4b" />
+                  <ellipse class="kitty-eye eye-r" cx="48" cy="27" rx="2.4" ry="3.6" fill="#1e1b4b" />
+                </g>
+                <ellipse cx="38" cy="32" rx="2.8" ry="1.9" fill="#facc15" stroke="#ca8a04" stroke-width="0.7" />
+                <circle cx="21" cy="32" r="3.2" fill="#fbcfe8" opacity="0.9" />
+                <circle cx="55" cy="32" r="3.2" fill="#fbcfe8" opacity="0.9" />
+                <line x1="12" y1="26" x2="21" y2="28" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="10" y1="32" x2="20" y2="32" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="12" y1="37" x2="21" y2="35" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="64" y1="26" x2="55" y2="28" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="66" y1="32" x2="56" y2="32" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <line x1="64" y1="37" x2="55" y2="35" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+                <g class="kitty-peeker-paws">
+                  <ellipse cx="26" cy="44" rx="5.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.4" />
+                  <line x1="24" y1="43" x2="24" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                  <line x1="28" y1="43" x2="28" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                  <ellipse cx="50" cy="44" rx="5.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.4" />
+                  <line x1="48" y1="43" x2="48" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                  <line x1="52" y1="43" x2="52" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+                </g>
+              </svg>
+            </div>
+            <div class="text-display-area" id="textDisplay"></div>
+          </div>
+
+          <!-- Subtle Encouragement Tip Pill -->
+          <div class="duo-grammar-bite duo-tip-pill" id="duoGrammarBite">
+            <span class="bite-icon">💡</span>
+            <span class="bite-text" id="grammarBiteText">स्क्रीन पर देखकर टाइप करें, कीबोर्ड देखने की ज़रूरत नहीं!
+              🌸</span>
+          </div>
+
+          <!-- 2. Duolingo Word-Bank Tiles View -->
+          <div class="tiles-core" id="tilesCore" style="display:none;">
+            <div class="tiles-dropzone" id="tilesDropzone">
+              <div class="tiles-slot-empty">Click or tap word tiles below</div>
+            </div>
+            <div class="tiles-bank-grid" id="tilesBankGrid"></div>
+          </div>
+
+          <!-- 3. Meaning Match Quiz Core -->
+          <div class="quiz-core" id="quizCore" style="display:none;">
+            <div class="quiz-options-grid" id="quizOptionsGrid"></div>
+          </div>
+
+          <!-- 4. Real-Life Conversation Chat Core -->
+          <div class="chat-core" id="chatCore" style="display:none;">
+            <div class="chat-scenario-bar">
+              <span class="chat-scenario-badge" id="chatScenarioBadge">🏫 School Roleplay</span>
+              <span class="chat-scenario-title" id="chatScenarioTitle">Teacher se Baat-Cheet (English
+                Conversation)</span>
+            </div>
+            <div class="chat-messages-container" id="chatMessagesContainer"></div>
+            <div class="chat-prompt-card">
+              <div class="chat-prompt-header">
+                <span class="chat-prompt-label">✍️ Apka Jawab (Type your reply):</span>
+                <span class="chat-prompt-hindi" id="chatPromptHindi">"Mera naam Pooja hai."</span>
+              </div>
+              <div class="chat-target-display" id="chatTargetDisplay"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Finger Placement Guide -->
+      <div class="finger-guide">
+        <div class="finger-hint">
+          <span class="finger-dot" id="fingerBadge">●</span>
+          <span id="fingerTipText">[Hold SHIFT] + Press 'M' with Right Index (Right Hand)</span>
+        </div>
+        <div class="finger-tip">💡 Tip: स्क्रीन पर देखकर टाइप करें, कीबोर्ड देखने की ज़रूरत नहीं!</div>
+      </div>
+
+      <!-- 5. Claymorphism Laptop Keyboard -->
+      <div class="keyboard-section">
+        <!-- Peeking Hello Kitty on top edge of keyboard -->
+        <div class="kitty-peeker kitty-peeker-keyboard" id="kittyPeekerKeyboard"
+          title="Hello Kitty cheering at your keyboard! 🎀">
+          <svg viewBox="0 0 76 50" width="50" height="34" class="kitty-peeker-svg">
+            <defs>
+              <linearGradient id="kpkBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fb7185" />
+                <stop offset="100%" stop-color="#e11d48" />
+              </linearGradient>
+            </defs>
+            <polygon points="16,25 21,5 34,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"
+              stroke-linejoin="round" />
+            <polygon points="60,25 55,5 42,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2"
+              stroke-linejoin="round" />
+            <polygon points="19,21 22,11 31,18" fill="#fce7f3" />
+            <polygon points="57,21 54,11 45,18" fill="#fce7f3" />
+            <ellipse cx="38" cy="27" rx="26" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2" />
+            <g class="kitty-bow">
+              <ellipse cx="50" cy="13" rx="6.5" ry="4.2" fill="url(#kpkBowGrad)" stroke="#be123c" stroke-width="1.2"
+                transform="rotate(-25 50 13)" />
+              <ellipse cx="61" cy="17" rx="6.5" ry="4.2" fill="url(#kpkBowGrad)" stroke="#be123c" stroke-width="1.2"
+                transform="rotate(35 61 17)" />
+              <circle cx="55" cy="15" r="3.8" fill="#be123c" />
+              <circle cx="54" cy="14" r="1.1" fill="#ffffff" />
+            </g>
+            <g class="kitty-eyes">
+              <ellipse class="kitty-eye eye-l" cx="28" cy="27" rx="2.4" ry="3.6" fill="#1e1b4b" />
+              <ellipse class="kitty-eye eye-r" cx="48" cy="27" rx="2.4" ry="3.6" fill="#1e1b4b" />
+            </g>
+            <ellipse cx="38" cy="32" rx="2.8" ry="1.9" fill="#facc15" stroke="#ca8a04" stroke-width="0.7" />
+            <circle cx="21" cy="32" r="3.2" fill="#fbcfe8" opacity="0.9" />
+            <circle cx="55" cy="32" r="3.2" fill="#fbcfe8" opacity="0.9" />
+            <line x1="12" y1="26" x2="21" y2="28" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+            <line x1="10" y1="32" x2="20" y2="32" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+            <line x1="12" y1="37" x2="21" y2="35" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+            <line x1="64" y1="26" x2="55" y2="28" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+            <line x1="66" y1="32" x2="56" y2="32" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+            <line x1="64" y1="37" x2="55" y2="35" stroke="#1e1b4b" stroke-width="1.4" stroke-linecap="round" />
+            <g class="kitty-peeker-paws">
+              <ellipse cx="26" cy="44" rx="5.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.4" />
+              <line x1="24" y1="43" x2="24" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+              <line x1="28" y1="43" x2="28" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+              <ellipse cx="50" cy="44" rx="5.5" ry="4" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.4" />
+              <line x1="48" y1="43" x2="48" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+              <line x1="52" y1="43" x2="52" y2="46" stroke="#f472b6" stroke-width="0.9" stroke-linecap="round" />
+            </g>
+          </svg>
+        </div>
+        <div id="virtualKeyboard"></div>
+      </div>
+
+                  <!-- 6. Girlish Celebration Pop-up Modal (Duolingo-Grade Luxury & Festive Corners) -->
+      <div class="modal-overlay" id="girlishCelebrationModal">
+        <div class="modal-card girlish-celebrate-card">
+          <!-- Cute Corner Stickers (No more empty white corners!) -->
+          <div class="corner-sticker corner-top-left" title="Hello Kitty Ribbon">🎀</div>
+          <div class="corner-sticker corner-top-right" title="Lucky Star">⭐</div>
+          <div class="corner-sticker corner-bottom-left" title="Sweet Strawberry">🍓</div>
+          <div class="corner-sticker corner-bottom-right" title="Cherry Blossom">🌸</div>
+
+          <!-- Top celebratory ribbon badge -->
+          <div class="girlish-ribbon-badge">✨ FABULOUS TYPING! ✨</div>
+
+          <!-- Dual Mascots & 3 Gold Stars Celebration Header - Balanced Full Width -->
+          <div class="girlish-mascot-row">
+            <!-- Left: Hello Kitty with cheering cloud -->
+            <div class="girlish-mascot-col col-left kitty-bounce">
+              <div class="mascot-speech-cloud">Kamal kiya! 💖</div>
+              <div class="mascot-avatar-circle">
+                <svg class="kitty-svg" viewBox="0 0 100 100" width="58" height="58">
+                  <defs>
+                    <linearGradient id="mKittyBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#fb7185" />
+                      <stop offset="100%" stop-color="#e11d48" />
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="50" cy="54" rx="36" ry="29" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                  <polygon points="21,37 32,19 41,31" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                  <polygon points="59,31 68,19 79,37" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                  <ellipse cx="38" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                  <ellipse cx="62" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                  <ellipse cx="50" cy="59" rx="4.5" ry="3.2" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+                  <ellipse cx="27" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                  <ellipse cx="73" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                  <g class="kitty-bow" transform="translate(62, 21) rotate(15)">
+                    <ellipse cx="-11" cy="0" rx="9" ry="7" fill="url(#mKittyBowGrad)" />
+                    <ellipse cx="11" cy="0" rx="9" ry="7" fill="url(#mKittyBowGrad)" />
+                    <circle cx="0" cy="0" r="5" fill="#e11d48" />
+                  </g>
+                </svg>
+              </div>
+              <span class="mascot-mini-label">Kitty 🎀</span>
+            </div>
+
+            <!-- Center: 3 Grand Bouncing Golden Stars -->
+            <div class="girlish-stars-center">
+              <div class="girlish-stars-bounce">
+                <span class="star-item star-1" title="Speed">⭐</span>
+                <span class="star-item star-2" title="Accuracy">⭐</span>
+                <span class="star-item star-3" title="Mastery">⭐</span>
+              </div>
+              <div class="stars-subtitle-badge">3-STAR MASTER! 🌟</div>
+            </div>
+
+            <!-- Right: Mimi Bunny with cheering cloud -->
+            <div class="girlish-mascot-col col-right mimi-bounce">
+              <div class="mascot-speech-cloud">100% Sahi! 🌸</div>
+              <div class="mascot-avatar-circle">
+                <svg class="mimi-svg" viewBox="0 0 100 100" width="58" height="58">
+                  <ellipse class="mimi-ear mimi-ear-l" cx="36" cy="18" rx="7.5" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                  <ellipse cx="36" cy="19" rx="4" ry="14" fill="#fbcfe8" opacity="0.75" />
+                  <ellipse class="mimi-ear mimi-ear-r" cx="64" cy="18" rx="7.5" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                  <ellipse cx="64" cy="19" rx="4" ry="14" fill="#fbcfe8" opacity="0.75" />
+                  <ellipse cx="50" cy="54" rx="34" ry="30" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                  <ellipse cx="38" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                  <ellipse cx="62" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                  <ellipse cx="50" cy="60" rx="3" ry="2.2" fill="#fb7185" />
+                  <ellipse cx="28" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                  <ellipse cx="72" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                  <path d="M 40 25 L 43 19 L 46 25 L 50 17 L 54 25 L 57 19 L 60 25 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" />
+                </svg>
+              </div>
+              <span class="mascot-mini-label">Mimi 🐰</span>
+            </div>
+          </div>
+
+          <h2 class="girlish-title" id="girlishModalTitle">Shaabash! Ekdum Sahi! 🌸✨</h2>
+          <p class="girlish-subtitle" id="girlishModalSubtitle">Aapki typing speed aur accuracy har roz badh rahi hai!</p>
+
+          <!-- Complete Vocabulary Showcase Card (English Word + Pronunciation + Hindi) -->
+          <div class="girlish-vocab-showcase" id="girlishVocabShowcase">
+            <!-- Small Word Display -->
+            <div class="vocab-duo-container" id="vocabDuoContainer">
+              <div class="vocab-side en-side">
+                <span class="vocab-badge-label">🔤 Typed Word</span>
+                <span class="vocab-word-text" id="girlishTypedWord">mother</span>
+                <span class="vocab-pronounce-text" id="girlishPronounce">[ mother ]</span>
+              </div>
+              <div class="vocab-arrow-circle">➔</div>
+              <div class="vocab-side hi-side">
+                <span class="vocab-badge-label">🌸 Hindi Arth (हिंदी अर्थ)</span>
+                <span class="vocab-hindi-text" id="girlishHindiQuote">माँ</span>
+                <button class="vocab-speak-btn" id="girlishSpeakBtn" type="button" title="Awaaz sunein">🔊 Bol Kar Suno</button>
+              </div>
+            </div>
+
+            <!-- 50-Word Essay Display (Shown for Essays) -->
+            <div class="essay-duo-container" id="essayDuoContainer" style="display:none;">
+              <div class="essay-topic-tag" id="girlishEssayTopicTag">📝 50-Word Essay Complete!</div>
+              <p class="essay-hindi-text" id="girlishEssayHiText"></p>
+            </div>
+          </div>
+
+          <!-- Stats Mini-Grid -->
+          <div class="girlish-stats-grid">
+            <div class="girlish-stat-pill stat-speed">
+              <span class="g-icon">⚡</span>
+              <div>
+                <strong id="girlishWpm">32 WPM</strong>
+                <span>Speed</span>
+              </div>
+            </div>
+            <div class="girlish-stat-pill stat-acc">
+              <span class="g-icon">🎯</span>
+              <div>
+                <strong id="girlishAccuracy">100%</strong>
+                <span>Accuracy</span>
+              </div>
+            </div>
+            <div class="girlish-stat-pill stat-xp">
+              <span class="g-icon">⭐</span>
+              <div>
+                <strong id="girlishXp">+25 XP</strong>
+                <span>Reward</span>
+              </div>
+            </div>
+            <div class="girlish-stat-pill stat-combo">
+              <span class="g-icon">🔥</span>
+              <div>
+                <strong id="girlishCombo">5x</strong>
+                <span>Combo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Girlish Action Button -->
+          <div class="girlish-actions-row">
+            <button class="girlish-continue-btn" id="girlishContinueBtn">
+              <span>🌸 Continue Next (आगे बढ़ें)</span> <kbd>↵ Enter</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Legacy auxiliary panes kept in DOM for backward-compatibility but hidden -->
+    <div id="extraLegacyPanes" style="display:none !important;">
+      <!-- TAB: CURRICULUM & WINDING PATH -->
+      <section class="tab-pane" id="tab-curriculum">
+
+        <div class="path-view-header">
+          <div class="path-title">
+            <h2>🗺️ Your Learning Journey (सीखने का सफ़र)</h2>
+            <p>Har node complete karo, 3 Stars ⭐ collect karo aur Mystery Chests 🎁 unlock karo!</p>
+          </div>
+          <div class="path-switch">
+            <button class="mode-pill active" id="viewPathBtn">🗺️ Winding Path</button>
+            <button class="mode-pill" id="viewGridBtn">📑 Grid View</button>
+          </div>
+        </div>
+
+        <!-- Duolingo-style Winding Stepping Stone Map -->
+        <div class="winding-path-container" id="windingPathContainer"></div>
+
+        <!-- Traditional Grid Container -->
+        <div class="grid-curriculum-container" id="gridCurriculumContainer" style="display:none;">
+          <div class="level-section">
+            <div class="level-header">
+              <span class="level-badge">L0</span>
+              <div>
+                <h3>Finger Training (उंगलियों की ट्रेनिंग)</h3>
+                <p>Home Row, Top Row, Bottom Row keys practice</p>
+              </div>
+            </div>
+            <div class="level-grid" id="level0List"></div>
+          </div>
+
+          <div class="level-section">
+            <div class="level-header">
+              <span class="level-badge">L1</span>
+              <div>
+                <h3>Vocabulary (शब्द भंडार)</h3>
+                <p>Common English words with Hindi meanings</p>
+              </div>
+            </div>
+            <div class="level-grid" id="level1List"></div>
+          </div>
+
+          <div class="level-section">
+            <div class="level-header">
+              <span class="level-badge">L2</span>
+              <div>
+                <h3>Phrases (वाक्यांश)</h3>
+                <p>Useful English phrases for daily use</p>
+              </div>
+            </div>
+            <div class="level-grid" id="level2List"></div>
+          </div>
+
+          <div class="level-section">
+            <div class="level-header">
+              <span class="level-badge">L3</span>
+              <div>
+                <h3>Sentences (वाक्य)</h3>
+                <p>Complete English sentences with Hindi translations</p>
+              </div>
+            </div>
+            <div class="level-grid" id="level3List"></div>
+          </div>
+
+          <div class="level-section">
+            <div class="level-header">
+              <span class="level-badge">L4</span>
+              <div>
+                <h3>Stories & Conversations (कहानियाँ)</h3>
+                <p>Short stories and dialogues for advanced practice</p>
+              </div>
+            </div>
+            <div class="level-grid" id="level4List"></div>
+          </div>
+
+          <div class="level-section">
+            <div class="level-header">
+              <span class="level-badge" style="background:#8b5cf6;">L5</span>
+              <div>
+                <h3>50-Word School Essays (50 शब्दों के निबंध)</h3>
+                <p>Full continuous paragraphs for real exam and laptop typing mastery</p>
+              </div>
+            </div>
+            <div class="level-grid" id="level5List"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TAB: AI MAGIC -->
+      <section class="tab-pane" id="tab-ai">
+        <div class="ai-studio">
+          <div class="ai-input-panel">
+            <h2>✨ AI English Lesson Generator</h2>
+            <p>कोई भी टॉपिक लिखो, AI तुम्हारे लिए English + Hindi lesson बनाएगा!</p>
+            <div class="topic-chips">
+              <button class="topic-chip" data-topic="doctor">🏥 Doctor Visit</button>
+              <button class="topic-chip" data-topic="shopping">🛒 Shopping</button>
+              <button class="topic-chip" data-topic="cricket">🏏 Cricket</button>
+              <button class="topic-chip" data-topic="cooking">🍳 Cooking</button>
+              <button class="topic-chip" data-topic="interview">💼 Interview</button>
+              <button class="topic-chip" data-topic="nature">🌿 Nature</button>
+            </div>
+            <input type="text" id="aiTopicInput"
+              placeholder="Type any topic... (जैसे: My School, Diwali, Train Journey)">
+            <input type="password" id="hfTokenInput" placeholder="Hugging Face Token (optional - for online AI)">
+            <button class="btn-primary" id="aiGenerateBtn">✨ Generate AI English Lesson</button>
+          </div>
+          <div class="ai-output-panel">
+            <h3>📝 Generated Lesson Preview</h3>
+            <div id="aiOutputBox" class="ai-output-box">
+              <p class="placeholder-text">यहाँ AI का बनाया हुआ lesson दिखेगा...</p>
+            </div>
+            <button class="btn-secondary" id="aiSaveOfflineBtn" style="display:none">💾 Save Offline</button>
+            <button class="btn-primary" id="aiStartPracticeBtn" style="display:none">🎮 Start Practice</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: MY DIARY & BOOKS -->
+      <section class="tab-pane" id="tab-custom">
+        <!-- 1. Word of the Day Golden Card -->
+        <div class="word-of-day-card" id="wordOfDayCard">
+          <div class="wod-badge">⭐ AAJ KA GOLDEN WORD (आज का प्रेरणादायक शब्द)</div>
+          <div class="wod-content">
+            <div class="wod-main">
+              <h2 class="wod-word" id="wodEnglish">Confidence</h2>
+              <span class="wod-pronounce" id="wodPronounce">[ कॉन-फि-डेंस • Confidence ]</span>
+              <div class="wod-hindi" id="wodHindi">🌸 अर्थ: आत्मविश्वास / भरोसा</div>
+              <p class="wod-sentence" id="wodSentence">"I have full confidence in my learning." (मुझे अपनी पढ़ाई पर पूरा
+                भरोसा है।)</p>
+            </div>
+            <div class="wod-actions">
+              <button class="duo-audio-btn speaker-btn" id="wodSpeakBtn" title="Pronounce word">🔊</button>
+              <button class="duo-audio-btn turtle-btn" id="wodTurtleBtn" title="Slow pronunciation">🐢</button>
+              <button class="duo-continue-btn" id="wodPracticeBtn">⌨️ Practice This Word</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Meri Vocabulary Diary Notebook -->
+        <div class="diary-card">
+          <div class="diary-header">
+            <div>
+              <h2>📔 Meri Shabdawali Diary (मेरी शब्दावली डायरी)</h2>
+              <p>Aapke seekhe hue sabhi English shabd, unka Hindi arth aur bolne ke sentences!</p>
+            </div>
+            <div class="diary-search-box">
+              <input type="text" id="diarySearchInput" placeholder="🔍 Search English word or Hindi arth...">
+            </div>
+          </div>
+
+          <div class="diary-filter-chips" id="diaryFilterChips">
+            <button class="diary-filter-chip active" data-filter="all">All Words (<span
+                id="diaryTotalCount">0</span>)</button>
+            <button class="diary-filter-chip" data-filter="family">👨‍👩‍👧 Family</button>
+            <button class="diary-filter-chip" data-filter="food">🍎 Food</button>
+            <button class="diary-filter-chip" data-filter="school">🏫 School</button>
+            <button class="diary-filter-chip" data-filter="actions">🏃 Verbs</button>
+            <button class="diary-filter-chip" data-filter="courtesy">💖 Courtesy</button>
+          </div>
+
+          <div class="diary-words-grid" id="diaryWordsGrid">
+            <!-- Dynamically populated cards -->
+          </div>
+        </div>
+
+        <!-- 2b. AI 50-Word Continuous Paragraph Studio -->
+        <div class="ai-50word-studio-card" id="ai50WordStudioCard">
+          <div class="self-writing-header">
+            <div>
+              <span class="self-writing-badge">🤖 AI 50-WORD PARAGRAPH STUDIO</span>
+              <h2>AI Se 50 Shabdon Ka Paragraph Banwayein</h2>
+              <p>Koi bhi topic chunein, AI khud 50 shabdon ka poora paragraph banayega aur aap Arena me type karengi!
+              </p>
+            </div>
+            <div class="word-counter-pill" id="studioWordCountPill">
+              <span>📝</span> <span id="studioWordCount">49</span> Words
+            </div>
+          </div>
+
+          <div class="prompt-starter-chips" id="studioTopicChips">
+            <button class="topic-chip active" data-topic="school">🏫 My School</button>
+            <button class="topic-chip" data-topic="mother">🌸 My Mother</button>
+            <button class="topic-chip" data-topic="nature">🌳 Green Trees</button>
+            <button class="topic-chip" data-topic="walk">☀️ Morning Walk</button>
+            <button class="topic-chip" data-topic="friend">👭 Best Friend</button>
+            <button class="topic-chip" data-topic="cricket">🏏 Cricket</button>
+            <button class="topic-chip" data-topic="diwali">🪔 Diwali</button>
+            <button class="topic-chip" data-topic="pet">🐕 Cute Pets</button>
+            <button class="topic-chip" data-topic="books">📚 Good Books</button>
+            <button class="topic-chip" data-topic="surprise">🎲 Surprise Me!</button>
+          </div>
+
+          <div class="studio-custom-row">
+            <input type="text" id="studioCustomInput"
+              placeholder="Ya apna koi topic likhein... (जैसे: Rainy Day, My Dream, Space)">
+            <button class="btn-primary" id="studioGenerateBtn">✨ AI Paragraph Banao</button>
+          </div>
+
+          <!-- Generated Paragraph Box -->
+          <div class="studio-result-box" id="studioResultBox">
+            <div class="studio-result-header">
+              <span class="studio-topic-badge" id="studioTopicBadge">🏫 Topic: My School</span>
+              <span class="studio-word-badge" id="studioWordBadge">📝 49 Words</span>
+            </div>
+            <div class="studio-english-paragraph" id="studioEnglishText">My school is a wonderful temple of knowledge,
+              discipline, and friendship. Every morning, I wear my clean uniform, tie my shoelaces, and reach the
+              peaceful assembly ground. Our dedicated teachers explain every subject with patience and joy. I enjoy
+              studying in our quiet library and playing badminton with dear classmates.</div>
+            <div class="studio-hindi-paragraph" id="studioHindiText">🌸 <strong>हिंदी अनुवाद:</strong> मेरा विद्यालय
+              ज्ञान, अनुशासन और मित्रता का एक अद्भुत मंदिर है। हर सुबह मैं साफ़ ड्रेस पहनकर शांत प्रार्थना सभा में
+              पहुँचती हूँ। शिक्षक धैर्य और आनंद से पढ़ाते हैं। मुझे लाइब्रेरी में पढ़ना और दोस्तों के साथ बैडमिंटन खेलना
+              बहुत पसंद है।</div>
+            <div class="studio-action-row">
+              <button class="duo-continue-btn" id="studioTypeInArenaBtn">
+                <span>⌨️ Arena Me Poora Paragraph Type Karo! 🚀</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2b. AI 50-Word Continuous Paragraph Studio -->
+        <div class="ai-50word-studio-card" id="ai50WordStudioCard">
+          <div class="self-writing-header">
+            <div>
+              <span class="self-writing-badge">🤖 AI 50-WORD PARAGRAPH STUDIO</span>
+              <h2>AI Se 50 Shabdon Ka Paragraph Banwayein</h2>
+              <p>Koi bhi topic chunein, AI khud 50 shabdon ka poora paragraph banayega aur aap Arena me type karengi!
+              </p>
+            </div>
+            <div class="word-counter-pill" id="studioWordCountPill">
+              <span>📝</span> <span id="studioWordCount">49</span> Words
+            </div>
+          </div>
+
+          <div class="prompt-starter-chips" id="studioTopicChips">
+            <button class="topic-chip active" data-topic="school">🏫 My School</button>
+            <button class="topic-chip" data-topic="mother">🌸 My Mother</button>
+            <button class="topic-chip" data-topic="nature">🌳 Green Trees</button>
+            <button class="topic-chip" data-topic="walk">☀️ Morning Walk</button>
+            <button class="topic-chip" data-topic="friend">👭 Best Friend</button>
+            <button class="topic-chip" data-topic="cricket">🏏 Cricket</button>
+            <button class="topic-chip" data-topic="diwali">🪔 Diwali</button>
+            <button class="topic-chip" data-topic="pet">🐕 Cute Pets</button>
+            <button class="topic-chip" data-topic="books">📚 Good Books</button>
+            <button class="topic-chip" data-topic="surprise">🎲 Surprise Me!</button>
+          </div>
+
+          <div class="studio-custom-row">
+            <input type="text" id="studioCustomInput"
+              placeholder="Ya apna koi topic likhein... (जैसे: Rainy Day, My Dream, Space)">
+            <button class="btn-primary" id="studioGenerateBtn">✨ AI Paragraph Banao</button>
+          </div>
+
+          <!-- Generated Paragraph Box -->
+          <div class="studio-result-box" id="studioResultBox">
+            <div class="studio-result-header">
+              <span class="studio-topic-badge" id="studioTopicBadge">🏫 Topic: My School</span>
+              <span class="studio-word-badge" id="studioWordBadge">📝 49 Words</span>
+            </div>
+            <div class="studio-english-paragraph" id="studioEnglishText">My school is a wonderful temple of knowledge,
+              discipline, and friendship. Every morning, I wear my clean uniform, tie my shoelaces, and reach the
+              peaceful assembly ground. Our dedicated teachers explain every subject with patience and joy. I enjoy
+              studying in our quiet library and playing badminton with dear classmates.</div>
+            <div class="studio-hindi-paragraph" id="studioHindiText">🌸 <strong>हिंदी अनुवाद:</strong> मेरा विद्यालय
+              ज्ञान, अनुशासन और मित्रता का एक अद्भुत मंदिर है। हर सुबह मैं साफ़ ड्रेस पहनकर शांत प्रार्थना सभा में
+              पहुँचती हूँ। शिक्षक धैर्य और आनंद से पढ़ाते हैं। मुझे लाइब्रेरी में पढ़ना और दोस्तों के साथ बैडमिंटन खेलना
+              बहुत पसंद है।</div>
+            <div class="studio-action-row">
+              <button class="duo-continue-btn" id="studioTypeInArenaBtn">
+                <span>⌨️ Arena Me Poora Paragraph Type Karo! 🚀</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Custom School Book Typing Practice -->
+        <div class="custom-card">
+          <h2>📖 Apni School Book se Practice Karo!</h2>
+          <p>Apni school kitaab ka koi paragraph ya sentences yahan paste karke type karein:</p>
+          <textarea id="customTextInput" rows="4" placeholder="Paste your English school text here..."></textarea>
+          <input type="text" id="customTextHindiInput" placeholder="Hindi meaning (optional)">
+          <button class="btn-primary" id="customTextStartBtn">🚀 Start Typing Practice</button>
+        </div>
+      </section>
+
+      <!-- TAB: MY STARS & DAILY QUESTS -->
+      <section class="tab-pane" id="tab-stats">
+        <!-- 0. Bhaiya's Motivation Note Card -->
+        <div class="brother-note-card">
+          <div class="brother-note-left">
+            <div class="brother-note-icon">💌</div>
+            <div class="brother-note-content">
+              <div class="brother-note-title">Bhaiya's Motivation Note (भाई का संदेश)</div>
+              <div class="brother-note-body" id="brotherNoteDisplay">
+                "Shaabash gudiya! Har roz thodi si practice se tumhari English aur typing dono zabardast ho jayegi.
+                Mujhe tumpar poora bharosa hai! Proud of you! 💖 - Bhaiya"
+              </div>
+              <div class="brother-note-edit-area" id="brotherNoteEditArea" style="display:none;">
+                <textarea id="brotherNoteInput" rows="2" class="brother-note-input"
+                  placeholder="Apni behen ke liye ek pyara sa motivation sandesh likhein..."></textarea>
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                  <button class="shop-action-btn apply-btn" id="saveBrotherNoteBtn">Save Note</button>
+                  <button class="shop-action-btn" id="cancelBrotherNoteBtn">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="brother-note-actions">
+            <button class="shop-action-btn" id="editBrotherNoteBtn">✏️ Edit Note</button>
+            <button class="shop-action-btn buy-btn" id="openFamilyCardBtn">📸 Family Card</button>
+          </div>
+        </div>
+
+        <!-- 1. Daily Quests Card -->
+        <div class="quests-card">
+          <div class="quests-header">
+            <div>
+              <h2>🎯 Today's Quests (आज के लक्ष्य)</h2>
+              <p>Har roz 3 aasan tasks poore karo aur extra Gems 💎 jeeto!</p>
+            </div>
+            <span class="quest-crown-badge" id="questCrownBadge">👑 In Progress</span>
+          </div>
+          <div class="quests-list" id="questsList">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </div>
+
+        <!-- 1b. Duolingo Animal League Leaderboard -->
+        <div class="league-card">
+          <div class="league-header">
+            <div>
+              <h2>🏆 Animal League (साप्ताहिक लीग)</h2>
+              <p>Top 3 learners advance to Silver League! Rank updates live with every XP earned!</p>
+            </div>
+            <span class="league-badge" id="leagueBadge">🥉 Bronze League</span>
+          </div>
+          <div class="league-roster" id="leagueRoster">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </div>
+
+        <!-- 1c. Mimi's Boutique & Theme Shop (Spend Gems) -->
+        <div class="boutique-card">
+          <div class="boutique-header">
+            <div>
+              <h2>🛍️ Mimi's Boutique (थीम और अलमारी)</h2>
+              <p>Apne jeete hue Gems 💎 se cute clay themes aur Mimi ke accessories unlock karo!</p>
+            </div>
+            <span class="gems-balance-pill">💎 <span id="shopGemsDisplay">15</span> Gems</span>
+          </div>
+
+          <div class="boutique-section-title">🎨 Clay Color Themes</div>
+          <div class="themes-grid" id="themesGrid">
+            <!-- Dynamically populated by JS -->
+          </div>
+
+          <div class="boutique-section-title">🎀 Mimi's Accessories & Hats</div>
+          <div class="accessories-grid" id="accessoriesGrid">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </div>
+
+        <!-- 1d. Official Certificate Banner Card -->
+        <div class="certificate-banner-card">
+          <div class="cert-banner-left">
+            <div class="cert-seal">🎓</div>
+            <div>
+              <h3>Official Typing Certificate (प्रमाण पत्र)</h3>
+              <p>Apni typing speed aur accuracy ka verified printable diploma dekho aur print karo!</p>
+            </div>
+          </div>
+          <button class="duo-continue-btn" id="openCertBtn">📜 View & Print Certificate</button>
+        </div>
+
+        <!-- 2. Lifetime Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-box"><span class="stat-box-icon">🍓</span><span class="stat-box-label">Streak</span><span
+              class="stat-box-value" id="statStreakDisplay">1 Days</span></div>
+          <div class="stat-box"><span class="stat-box-icon">⭐</span><span class="stat-box-label">Total XP</span><span
+              class="stat-box-value" id="statXpDisplay">0 XP</span></div>
+          <div class="stat-box"><span class="stat-box-icon">💎</span><span class="stat-box-label">Total Gems</span><span
+              class="stat-box-value" id="statGemsDisplay">15</span></div>
+          <div class="stat-box"><span class="stat-box-icon">📝</span><span class="stat-box-label">Words
+              Typed</span><span class="stat-box-value" id="statWordsDisplay">0</span></div>
+          <div class="stat-box"><span class="stat-box-icon">⚡</span><span class="stat-box-label">Best Speed</span><span
+              class="stat-box-value" id="statBestWpmDisplay">0 WPM</span></div>
+        </div>
+
+        <!-- 3. Sticker Album & Badges -->
+        <div class="album-card">
+          <h3>🎀 My Sticker Album (मेरी ट्रॉफी और स्टिकर्स)</h3>
+          <div class="stickers-grid" id="stickersGrid">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </div>
+
+        <!-- 4. Weak Keys Card -->
+        <div class="weak-keys-card">
+          <h3>🔍 Weak Keys Analysis (कमज़ोर बटनों का विश्लेषण)</h3>
+          <div id="weakKeysContainer"></div>
+          <button class="btn-secondary" id="practiceWeakKeysBtn">🎯 Practice Weak Keys</button>
+        </div>
+
+        <!-- 5. Reset All Progress Card -->
+        <div class="reset-progress-card" style="margin-top:20px; background:#fff1f2; border:2px dashed #f43f5e; border-radius:20px; padding:18px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="font-weight:800; font-size:1.05rem; color:#be123c;">🔄 Nayi Shuruat (Reset All Progress)</div>
+            <div style="font-size:0.88rem; color:#9f1239; margin-top:3px;">Agar aap ya aapki behen sabhi XP, Gems aur essays shuruat (Day 1 / 0 XP) se start karna chahte hain toh yahan se reset karein.</div>
+          </div>
+          <button class="shop-action-btn" style="background:linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color:#fff; border:none; border-radius:30px; padding:10px 22px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(244,63,94,0.35); font-size:0.9rem;" onclick="resetAllProgress()">🔄 Reset All Progress</button>
+        </div>
+      </section>
+    </div>
+
+  
+    <!-- TAB: SHABD GYAN & VOCAB TEST PAGE (Full Page Studio - No Popup!) -->
+    <section class="tab-pane" id="tab-vocab-page" style="display:none;">
+      <div class="vocab-page-wrapper">
+        <!-- Top Celebratory Ribbon & Mascots Row -->
+        <div class="vocab-page-header">
+          <!-- Left: Hello Kitty -->
+          <div class="quiz-mascot-unit col-left kitty-bounce">
+            <div class="quiz-speech-cloud" id="pageKittyCloud">Arth seekho & jeeto! 💖</div>
+            <div class="mascot-avatar-circle">
+              <svg class="kitty-svg" viewBox="0 0 100 100" width="46" height="46">
+                <defs>
+                  <linearGradient id="pgKittyBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fb7185" />
+                    <stop offset="100%" stop-color="#e11d48" />
+                  </linearGradient>
+                </defs>
+                <ellipse cx="50" cy="54" rx="36" ry="29" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <polygon points="21,37 32,19 41,31" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <polygon points="59,31 68,19 79,37" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <ellipse cx="38" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                <ellipse cx="62" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                <ellipse cx="50" cy="59" rx="4.5" ry="3.2" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+                <ellipse cx="27" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                <ellipse cx="73" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                <g class="kitty-bow" transform="translate(62, 21) rotate(15)">
+                  <ellipse cx="-11" cy="0" rx="9" ry="7" fill="url(#pgKittyBowGrad)" />
+                  <ellipse cx="11" cy="0" rx="9" ry="7" fill="url(#pgKittyBowGrad)" />
+                  <circle cx="0" cy="0" r="5" fill="#e11d48" />
+                </g>
+              </svg>
+            </div>
+            <span class="mascot-mini-label">Kitty 🎀</span>
+          </div>
+
+          <!-- Center: Title, Ribbon Badge & Subtitle -->
+          <div class="vocab-page-title-center">
+            <div class="girlish-ribbon-badge">🎯 SHABD GYAN & TEST STUDIO 🌸</div>
+            <h1 class="vocab-page-main-title">Shabd Pariksha & Gyan Studio 🌟</h1>
+            <p class="vocab-page-sub">Naye shabdon ke Hindi arth seekhein, quiz khelkar <strong>+20 XP</strong> & <strong>Gems 💎</strong> jeetein!</p>
+          </div>
+
+          <!-- Right: Mimi Bunny -->
+          <div class="quiz-mascot-unit col-right mimi-bounce">
+            <div class="quiz-speech-cloud" id="pageMimiCloud">Sahi jawab par +20 XP! 🌸</div>
+            <div class="mascot-avatar-circle">
+              <svg class="mimi-svg" viewBox="0 0 100 100" width="46" height="46">
+                <ellipse class="mimi-ear mimi-ear-l" cx="36" cy="18" rx="7.5" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <ellipse cx="36" cy="19" rx="4" ry="14" fill="#fbcfe8" opacity="0.75" />
+                <ellipse class="mimi-ear mimi-ear-r" cx="64" cy="18" rx="7.5" ry="19" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <ellipse cx="64" cy="19" rx="4" ry="14" fill="#fbcfe8" opacity="0.75" />
+                <ellipse cx="50" cy="54" rx="34" ry="30" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                <ellipse cx="38" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                <ellipse cx="62" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                <ellipse cx="50" cy="60" rx="3" ry="2.2" fill="#fb7185" />
+                <ellipse cx="28" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                <ellipse cx="72" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                <path d="M 40 25 L 43 19 L 46 25 L 50 17 L 54 25 L 57 19 L 60 25 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" />
+              </svg>
+            </div>
+            <span class="mascot-mini-label">Mimi 🐰</span>
+          </div>
+        </div>
+
+        <!-- Segmented Tab Switcher (Full Page Width) -->
+        <div class="vocab-page-tabs-bar">
+          <button class="vocab-page-tab active" id="btnPageTabQuiz" type="button">
+            <span class="tab-icon">🎯</span> <span>4-Option Quiz Test (चार विकल्प टेस्ट)</span>
+          </button>
+          <button class="vocab-page-tab" id="btnPageTabDict" type="button">
+            <span class="tab-icon">📖</span> <span>Shabd Khoj (शब्द खोज व अर्थ)</span>
+          </button>
+        </div>
+
+        <!-- VIEW 1: 4-Option Quiz View (Page Layout) -->
+        <div class="vocab-page-view" id="pageViewQuiz">
+          <div class="vocab-page-card">
+            <!-- Meta Bar -->
+            <div class="quiz-meta-bar">
+              <div class="quiz-progress-text">Sawal: <strong id="pageQCounter">1 / 10</strong></div>
+              <div class="quiz-score-pill">⭐ Score: <strong id="pageScoreText">0</strong></div>
+              <div class="quiz-reward-pill">💎 +5 Gems | ⭐ +20 XP</div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="quiz-question-box">
+              <div class="quiz-word-row">
+                <h3 class="quiz-main-word" id="pageTargetWord">courage</h3>
+                <span class="quiz-phonetic-badge" id="pagePhonetic">[ courage ]</span>
+                <button class="quiz-speak-btn" id="pageAudioBtn" type="button" title="Pronunciation sunein">🔊 Bol Kar Suno</button>
+              </div>
+              <p class="quiz-question-prompt">Niche diye gaye 4 vikalpon me se sahi <strong>Hindi Arth</strong> chuniye:</p>
+
+              <!-- 4 Choice Grid -->
+              <div class="quiz-options-grid" id="pageOptionsGrid">
+                <button class="quiz-opt-btn" data-opt="0" type="button"><span class="opt-label">A</span> <span class="opt-text" id="pageOptText0">Option 1</span></button>
+                <button class="quiz-opt-btn" data-opt="1" type="button"><span class="opt-label">B</span> <span class="opt-text" id="pageOptText1">Option 2</span></button>
+                <button class="quiz-opt-btn" data-opt="2" type="button"><span class="opt-label">C</span> <span class="opt-text" id="pageOptText2">Option 3</span></button>
+                <button class="quiz-opt-btn" data-opt="3" type="button"><span class="opt-label">D</span> <span class="opt-text" id="pageOptText3">Option 4</span></button>
+              </div>
+
+              <!-- Feedback message -->
+              <div class="quiz-feedback-box" id="pageFeedbackBox" style="display:none;">
+                <span class="quiz-feedback-icon" id="pageFeedbackIcon">🎉</span>
+                <div class="quiz-feedback-text" id="pageFeedbackText">Shaabash! Bilkul Sahi Jawab!</div>
+              </div>
+            </div>
+
+            <!-- Quiz Action Bottom Row -->
+            <div class="quiz-bottom-actions">
+              <button class="quiz-next-btn" id="pageNextBtn" type="button" disabled>
+                <span>Agla Sawal (Next) ➔</span>
+              </button>
+              <button class="quiz-type-btn" id="pageTypeThisWordBtn" type="button" title="Is word ko arena me practice karein">
+                <span>⌨️ Arena Me Type Karein ➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 2: Shabd Khoj & Dictionary (Page Layout) -->
+        <div class="vocab-page-view" id="pageViewDict" style="display:none;">
+          <div class="vocab-page-card">
+            <!-- Category Quick Filter Chips Row (Days, Months, Counting, 2+ Meanings, etc.) -->
+            <div class="vocab-cat-chips-row" id="vocabCatChipsRow">
+              <button class="vocab-cat-chip active" data-cat="all" type="button">🌟 Sabhi</button>
+              <button class="vocab-cat-chip special-glow" data-cat="multimeaning" type="button">✨ 2+ Meaning Words</button>
+              <button class="vocab-cat-chip" data-cat="days" type="button">📅 Days (दिन)</button>
+              <button class="vocab-cat-chip" data-cat="months" type="button">🗓️ Months (महीने)</button>
+              <button class="vocab-cat-chip" data-cat="counting" type="button">🔢 Counting (गिनती)</button>
+              <button class="vocab-cat-chip" data-cat="time" type="button">⏰ Time (समय)</button>
+              <button class="vocab-cat-chip" data-cat="colors" type="button">🎨 Colors (रंग)</button>
+              <button class="vocab-cat-chip" data-cat="family" type="button">👨‍👩‍👧 Family (परिवार)</button>
+              <button class="vocab-cat-chip" data-cat="fruits" type="button">🍎 Fruits & Veggies</button>
+              <button class="vocab-cat-chip" data-cat="animals" type="button">🐕 Animals & Birds</button>
+              <button class="vocab-cat-chip" data-cat="school" type="button">🏫 School</button>
+            </div>
+
+            <!-- Subwords Carousel (Quick Clickable Words) -->
+            <div class="vocab-subwords-carousel" id="vocabSubwordsCarousel">
+              <!-- Dynamically populated by JS -->
+            </div>
+
+            <!-- Duo Search Bar -->
+            <div class="duo-dict-search-row">
+              <div class="duo-dict-input-wrap">
+                <span class="duo-search-icon">🔍</span>
+                <input type="text" class="duo-dict-search-input" id="pageDictSearchInput" placeholder="Koi bhi English word search karein (जैसे cell, monday, mother, time)..." />
+              </div>
+              <button class="duo-dict-search-btn" id="pageDictSearchBtn" type="button">Khojein</button>
+            </div>
+
+            <!-- Duolingo Luxury Vocab Flashcard -->
+            <div class="duo-flashcard-box">
+              <!-- Top Duo Card Row: English -> Hindi -->
+              <div class="vocab-duo-container">
+                <div class="vocab-side en-side">
+                  <span class="vocab-badge-label">🔤 ENGLISH SHABD</span>
+                  <span class="vocab-word-text" id="pageDictResWord">time</span>
+                  <span class="vocab-pronounce-text" id="pageDictResPronounce">[ time ]</span>
+                  <button class="duo-listen-pill-btn" id="pageDictSpeakBtn" type="button" title="Pronunciation sunein">🔊 Bol Kar Suno</button>
+                </div>
+
+                <div class="vocab-arrow-circle">➔</div>
+
+                <div class="vocab-side hi-side">
+                  <span class="vocab-badge-label">🌸 HINDI ARTH</span>
+                  <span class="vocab-hindi-text" id="pageDictResHindi">समय</span>
+                  <span class="vocab-tag-badge" id="pageDictCategoryTag">✅ Verified Meaning</span>
+                </div>
+              </div>
+
+              <!-- Multi-Senses Box (for 2+ Meaning Words like cell, bat, watch, date, etc.) -->
+              <div class="vocab-multi-senses-box" id="pageDictMultiSensesBox" style="display:none;">
+                <!-- Populated dynamically by JS -->
+              </div>
+
+              <!-- Mascot Comic Speech Bubble (Large, Clear, Beautiful Example Sentence) -->
+              <div class="duo-example-bubble-wrap">
+                <div class="duo-example-avatar-col">
+                  <div class="mascot-avatar-circle mini">
+                    <svg class="kitty-svg" viewBox="0 0 100 100" width="38" height="38">
+                      <defs>
+                        <linearGradient id="pgExKittyBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#fb7185" />
+                          <stop offset="100%" stop-color="#e11d48" />
+                        </linearGradient>
+                      </defs>
+                      <ellipse cx="50" cy="54" rx="36" ry="29" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                      <polygon points="21,37 32,19 41,31" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                      <polygon points="59,31 68,19 79,37" fill="#ffffff" stroke="#fbcfe8" stroke-width="2.5" />
+                      <ellipse cx="38" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                      <ellipse cx="62" cy="53" rx="3.5" ry="4.5" fill="#3f3f46" />
+                      <ellipse cx="50" cy="59" rx="4.5" ry="3.2" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+                      <ellipse cx="27" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                      <ellipse cx="73" cy="58" rx="6" ry="3.5" fill="#fbcfe8" opacity="0.8" />
+                      <g class="kitty-bow" transform="translate(62, 21) rotate(15)">
+                        <ellipse cx="-11" cy="0" rx="9" ry="7" fill="url(#pgExKittyBowGrad)" />
+                        <ellipse cx="11" cy="0" rx="9" ry="7" fill="url(#pgExKittyBowGrad)" />
+                        <circle cx="0" cy="0" r="5" fill="#e11d48" />
+                      </g>
+                    </svg>
+                  </div>
+                  <span class="mascot-mini-tag">Kitty 💡</span>
+                </div>
+                <div class="duo-speech-bubble">
+                  <div class="duo-bubble-title">📖 Example Sentence (वाक्य में प्रयोग):</div>
+                  <p class="duo-bubble-en" id="pageDictResExample">"Time is very precious, so spend every moment wisely."</p>
+                  <p class="duo-bubble-hi" id="pageDictResExampleHi">"समय बहुत अनमोल है, इसलिए हर पल का समझदारी से उपयोग करें।"</p>
+                </div>
+              </div>
+
+              <!-- Single Prominent Duolingo 3D Button -->
+              <div class="duo-flashcard-actions single-action">
+                <button class="duo-btn-arena full-width" id="pageDictTypeWordBtn" type="button">
+                  <span>🌸 Arena Me Practice Karein (टाइप करें) ➔</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- AI 50-Word Paragraph Modal -->
+  <div class="modal-overlay" id="aiParagraphModal">
+    <div class="modal-card ai-para-modal-card">
+      <div class="modal-close-row">
+        <button class="icon-btn-ghost" id="closeAiParaModalBtn">✕</button>
+      </div>
+      <div class="ai-para-modal-header">
+        <span class="ai-para-modal-icon">🤖</span>
+        <h2>AI 50-Word Paragraph Studio</h2>
+        <p class="modal-sub">AI khud 50 shabdon ka mast paragraph banayega aur aap Arena me poora type karengi!</p>
+      </div>
+
+      <div class="ai-para-topics-grid" id="aiParaTopicsGrid">
+        <button class="topic-chip active" data-topic="school">🏫 My School</button>
+        <button class="topic-chip" data-topic="mother">🌸 My Mother</button>
+        <button class="topic-chip" data-topic="nature">🌳 Green Trees</button>
+        <button class="topic-chip" data-topic="walk">☀️ Morning Walk</button>
+        <button class="topic-chip" data-topic="friend">👭 Best Friend</button>
+        <button class="topic-chip" data-topic="cricket">🏏 Cricket</button>
+        <button class="topic-chip" data-topic="pet">🐕 Cute Pets</button>
+        <button class="topic-chip" data-topic="diwali">🪔 Diwali</button>
+        <button class="topic-chip" data-topic="books">📚 Good Books</button>
+        <button class="topic-chip" data-topic="surprise">🎲 Surprise Me!</button>
+      </div>
+
+      <div class="ai-para-custom-row">
+        <input type="text" id="aiParaCustomTopicInput"
+          placeholder="Ya koi bhi apna manpasand topic likhein... (जैसे: Rainy Day, My Dream, Space)">
+      </div>
+
+      <!-- Generated preview -->
+      <div class="ai-para-preview" id="aiParaPreview">
+        <div class="ai-para-badge-row">
+          <span class="ai-para-source-pill" id="aiParaSourcePill">✨ AI Crafted</span>
+          <span class="ai-para-count-pill" id="aiParaCountPill">📝 49 Words</span>
+        </div>
+        <p class="ai-para-english-text" id="aiParaEnglishText">My school is a wonderful temple of knowledge, discipline,
+          and friendship. Every morning, I wear my clean uniform, tie my shoelaces, and reach the peaceful assembly
+          ground. Our dedicated teachers explain every subject with patience and joy. I enjoy studying in our quiet
+          library and playing badminton with dear classmates.</p>
+        <p class="ai-para-hindi-text" id="aiParaHindiText">🌸 <strong>हिंदी:</strong> मेरा विद्यालय ज्ञान, अनुशासन और
+          मित्रता का एक अद्भुत मंदिर है। हर सुबह मैं प्रार्थना सभा में पहुँचती हूँ और शिक्षक प्रेम से पढ़ाते हैं।</p>
+      </div>
+
+      <div class="ai-para-actions">
+        <button class="btn-primary" id="generateAiParaBtn">
+          <span>✨ Naya Paragraph Banao</span>
+        </button>
+        <button class="duo-continue-btn" id="startAiParaTypingBtn">
+          <span>⌨️ Arena Me Poora Paragraph Type Karo! 🚀</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duolingo Victory Celebration Modal -->
+  <div class="modal-overlay" id="celebrationModal">
+    <div class="modal-card duo-victory-card">
+      <div class="duo-victory-header">
+        <div class="duo-trophy-bounce">🏆</div>
+        <h2>Lesson Complete! 🎉</h2>
+        <p class="modal-praise" id="modalHindiPraise">शाबाश! बहुत प्यारी टाइपिंग! 🌸✨</p>
+      </div>
+      <div class="duo-victory-stats">
+        <div class="duo-stat-card">
+          <span class="duo-stat-icon">⭐</span>
+          <span class="duo-stat-val" id="modalXpEarned">+120</span>
+          <span class="duo-stat-lbl">XP Earned</span>
+        </div>
+        <div class="duo-stat-card">
+          <span class="duo-stat-icon">🎯</span>
+          <span class="duo-stat-val" id="modalAccuracy">100%</span>
+          <span class="duo-stat-lbl">Accuracy</span>
+        </div>
+        <div class="duo-stat-card">
+          <span class="duo-stat-icon">⚡</span>
+          <span class="duo-stat-val" id="modalWpm">0</span>
+          <span class="duo-stat-lbl">WPM Speed</span>
+        </div>
+      </div>
+      <div class="duo-streak-banner" id="modalStreakBanner">
+        <span class="streak-flame">🔥</span>
+        <div>
+          <strong id="modalStreakTitle">Day 1 Streak Extended!</strong>
+          <p>Roz thodi si practice karne se typing speed rocket ho jayegi! 🚀</p>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="duo-continue-btn" id="modalNextBtn">🗺️ CONTINUE TO PATH <kbd>↵</kbd></button>
+        <button class="btn-secondary" id="modalRetryBtn">🔄 Practice Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Official Certificate Modal -->
+  <div class="modal-overlay" id="certificateModal">
+    <div class="modal-card cert-modal-card">
+      <div class="cert-border-outer">
+        <div class="cert-border-inner">
+          <div class="cert-header">
+            <div class="cert-ribbon">🎀 TYPOCUTE ACADEMY OF ENGLISH & TYPING</div>
+            <h1 class="cert-title">Certificate of Achievement</h1>
+            <p class="cert-hindi-subtitle">प्रमाण पत्र • उत्कृष्टता और समर्पण का सम्मान</p>
+          </div>
+
+          <p class="cert-presents">This certificate is proudly awarded to:</p>
+          <div class="cert-name-wrapper">
+            <input type="text" id="certStudentName" class="cert-name-input" value="Pooja Sharma"
+              placeholder="Student's Name">
+          </div>
+
+          <p class="cert-statement">
+            For outstanding dedication, touch-typing muscle memory, and mastery of English vocabulary & grammar in the
+            Duolingo-Grade TypoCute Curriculum.
+          </p>
+
+          <div class="cert-stats-row">
+            <div class="cert-stat-badge">
+              <span class="cert-stat-num" id="certSpeed">25</span>
+              <span class="cert-stat-lbl">WPM Speed</span>
+            </div>
+            <div class="cert-stat-badge">
+              <span class="cert-stat-num" id="certAccuracy">98%</span>
+              <span class="cert-stat-lbl">Accuracy</span>
+            </div>
+            <div class="cert-stat-badge">
+              <span class="cert-stat-num" id="certXp">450</span>
+              <span class="cert-stat-lbl">Total XP</span>
+            </div>
+          </div>
+
+          <div class="cert-footer">
+            <div class="cert-sig-block">
+              <div class="cert-sig-line">🐰 Mimi The Bunny</div>
+              <div class="cert-sig-role">Lead Tutor & Guide</div>
+            </div>
+            <div class="cert-seal-gold">
+              <span>★ OFFICIAL ★</span>
+              <span>100% VERIFIED</span>
+            </div>
+            <div class="cert-sig-block">
+              <div class="cert-sig-line" id="certDateDisplay">13 Nov 2026</div>
+              <div class="cert-sig-role">Date of Issue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cert-actions">
+        <button class="duo-continue-btn" id="printCertBtn">🖨️ Print / Save as PDF</button>
+        <button class="btn-secondary" id="closeCertBtn">✕ Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 20-Minute Eye & Wrist Stretch Rest Modal -->
+  <div class="modal-overlay" id="stretchBreakModal">
+    <div class="modal-card stretch-modal-card">
+      <div class="stretch-modal-header">
+        <div class="stretch-mascot-icon">🍵</div>
+        <h2>Rest Time, Gudiya! 🌸</h2>
+        <p class="modal-sub">20 minute ki continuous typing ke baad aankhon aur kalai ki sehat ke liye chhota sa rest!
+        </p>
+      </div>
+
+      <div class="stretch-timer-circle">
+        <div class="stretch-seconds" id="stretchSeconds">20</div>
+        <div class="stretch-breathe-text" id="stretchBreatheText">Breathe In... 🌸</div>
+      </div>
+
+      <div class="stretch-tips-grid">
+        <div class="stretch-tip-box">
+          <span class="st-icon">👀</span>
+          <strong>20-20-20 Rule</strong>
+          <p>Screen se door 20 feet kisi ped ya deewar ko 20 second tak dekhein!</p>
+        </div>
+        <div class="stretch-tip-box">
+          <span class="st-icon">🖐️</span>
+          <strong>Kalai ki Stretching</strong>
+          <p>Dono kalaiyon ko gol-gol ghuma kar ungliyon ko relax karein!</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="duo-continue-btn" id="resumeFromBreakBtn">Main Refresh Ho Gayi! 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Family Progress Report Card Modal -->
+  <div class="modal-overlay" id="familyProgressModal">
+    <div class="modal-card family-card-modal">
+      <div class="family-card-inner">
+        <div class="family-card-top">
+          <span class="family-ribbon">🌸 TYPOCUTE PROGRESS REPORT 🌸</span>
+          <h2 class="family-title">Pooja ki Pragati Patrika (प्रगति पत्रिका)</h2>
+          <p class="family-sub">Verified Touch-Typing & English Learning Achievement</p>
+        </div>
+
+        <div class="family-stats-grid">
+          <div class="f-stat"><span class="f-val" id="fWordsTyped">140+</span><span class="f-lbl">Words Practiced</span>
+          </div>
+          <div class="f-stat"><span class="f-val" id="fSpeed">24 WPM</span><span class="f-lbl">Touch-Typing Speed</span>
+          </div>
+          <div class="f-stat"><span class="f-val" id="fAccuracy">99%</span><span class="f-lbl">Accuracy</span></div>
+          <div class="f-stat"><span class="f-val" id="fStreak">1 Day</span><span class="f-lbl">Daily Streak</span></div>
+        </div>
+
+        <div class="family-mimi-review">
+          <div class="f-mimi-avatar">🐰</div>
+          <div class="f-mimi-comment" id="fMimiComment">
+            "Pooja roz lagan se practice kar rahi hai! Ab wo bina keyboard dekhe English type karna seekh chuki hai.
+            Shandar kamyabi! 🌸⭐"
+          </div>
+        </div>
+
+        <div class="family-quote-box">
+          <div class="fq-title">💌 Bhaiya's Message:</div>
+          <div class="fq-text" id="familyCardBrotherNote">"Shaabash gudiya! Mujhe tumpar poora bharosa hai!"</div>
+        </div>
+      </div>
+
+      <div class="cert-actions">
+        <button class="duo-continue-btn" id="printFamilyCardBtn">🖨️ Print / Save Family Card</button>
+        <button class="btn-secondary" id="closeFamilyCardBtn">✕ Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Floating Corner Side Peeker Hello Kitty -->
+  <div class="kitty-peeker kitty-peeker-side" id="kittyPeekerSide" title="Hello Kitty peeking from the side! 🎀">
+    <svg viewBox="0 0 65 70" width="46" height="50" class="kitty-side-svg">
+      <defs>
+        <linearGradient id="kpsBowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fb7185" />
+          <stop offset="100%" stop-color="#e11d48" />
+        </linearGradient>
+      </defs>
+      <g transform="rotate(-15 35 35)">
+        <polygon points="12,25 17,5 30,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2" />
+        <polygon points="56,25 51,5 38,16" fill="#ffffff" stroke="#fbcfe8" stroke-width="2" />
+        <ellipse cx="34" cy="27" rx="25" ry="18" fill="#ffffff" stroke="#fbcfe8" stroke-width="2" />
+        <g class="kitty-bow">
+          <ellipse cx="46" cy="13" rx="6" ry="4" fill="url(#kpsBowGrad)" stroke="#be123c" stroke-width="1.2"
+            transform="rotate(-25 46 13)" />
+          <ellipse cx="56" cy="17" rx="6" ry="4" fill="url(#kpsBowGrad)" stroke="#be123c" stroke-width="1.2"
+            transform="rotate(35 56 17)" />
+          <circle cx="51" cy="15" r="3.5" fill="#be123c" />
+          <circle cx="50" cy="14" r="1.1" fill="#ffffff" />
+        </g>
+        <ellipse cx="25" cy="27" rx="2.3" ry="3.5" fill="#1e1b4b" />
+        <ellipse cx="43" cy="27" rx="2.3" ry="3.5" fill="#1e1b4b" />
+        <ellipse cx="34" cy="32" rx="2.6" ry="1.8" fill="#facc15" />
+        <circle cx="18" cy="32" r="3" fill="#fbcfe8" opacity="0.9" />
+        <circle cx="50" cy="32" r="3" fill="#fbcfe8" opacity="0.9" />
+        <line x1="8" y1="26" x2="18" y2="28" stroke="#1e1b4b" stroke-width="1.3" />
+        <line x1="6" y1="32" x2="17" y2="32" stroke="#1e1b4b" stroke-width="1.3" />
+        <line x1="8" y1="37" x2="18" y2="35" stroke="#1e1b4b" stroke-width="1.3" />
+        <line x1="58" y1="26" x2="48" y2="28" stroke="#1e1b4b" stroke-width="1.3" />
+        <line x1="60" y1="32" x2="49" y2="32" stroke="#1e1b4b" stroke-width="1.3" />
+        <line x1="58" y1="37" x2="48" y2="35" stroke="#1e1b4b" stroke-width="1.3" />
+        <ellipse cx="14" cy="38" rx="5" ry="3.5" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.3" />
+        <ellipse cx="20" cy="44" rx="5" ry="3.5" fill="#ffffff" stroke="#fbcfe8" stroke-width="1.3" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- 7. Progress Tracker & Roadmap Modal (कहाँ तक पहुँचे) -->
+  <div class="modal-overlay" id="progressTrackerModal" style="display:none;">
+    <div class="modal-card progress-tracker-card">
+      <!-- Modal Header -->
+      <div class="pt-header">
+        <div class="pt-title-wrap">
+          <span class="pt-icon">📊</span>
+          <div>
+            <h2 class="pt-title">TypoCute Progress Tracker (कहाँ तक पहुँचे)</h2>
+            <p class="pt-subtitle">Aapki behen ki typing progress aur 30-essay roadmap</p>
+          </div>
+        </div>
+        <button class="pt-close-btn" id="closeProgressTrackerBtn" type="button" onclick="closeProgressTrackerModal()">✕</button>
+      </div>
+
+      <!-- Quick Summary Cards Row -->
+      <div class="pt-summary-grid">
+        <div class="pt-stat-box">
+          <div class="pt-stat-icon">📝</div>
+          <div class="pt-stat-val" id="ptParasCount">0 / 30</div>
+          <div class="pt-stat-lbl">50-Word Essays</div>
+        </div>
+        <div class="pt-stat-box">
+          <div class="pt-stat-icon">🌸</div>
+          <div class="pt-stat-val" id="ptWordsCount">0 / 2,211</div>
+          <div class="pt-stat-lbl">Words Mastered</div>
+        </div>
+        <div class="pt-stat-box">
+          <div class="pt-stat-icon">⭐</div>
+          <div class="pt-stat-val" id="ptXpVal">0 XP</div>
+          <div class="pt-stat-lbl">Total Score</div>
+        </div>
+        <div class="pt-stat-box">
+          <div class="pt-stat-icon">🍓</div>
+          <div class="pt-stat-val" id="ptStreakVal">1 Day</div>
+          <div class="pt-stat-lbl">Daily Streak</div>
+        </div>
+      </div>
+
+      <!-- 30 Essays Detailed Roadmap Checklist -->
+      <div class="pt-section-header">
+        <div class="pt-sec-title">📑 50-Word Essays Roadmap (30 Lessons)</div>
+        <span class="pt-sec-badge" id="ptEssaysProgressPercent">0% Completed</span>
+      </div>
+      <div class="pt-essays-list" id="ptEssaysChecklist">
+        <!-- Injected dynamically by JS -->
+      </div>
+
+      <!-- Storage Info Box (Where data is saved) -->
+      <div class="pt-storage-info-box">
+        <div class="pt-storage-icon">💾</div>
+        <div class="pt-storage-content">
+          <div class="pt-storage-title">Progress Kahan Save Hoti Hai? (Storage Location)</div>
+          <div class="pt-storage-desc">
+            TypoCute ka data aapke computer me <strong>%LocalAppData%\TypoCute\UserData</strong> folder me 100% offline aur safely save hota hai.
+            Browser history ya cache clear karne se bhi yeh progress delete nahi hoti.
+          </div>
+        </div>
+      </div>
+
+      <!-- Backup & Restore Actions -->
+      <div class="pt-actions-row">
+        <button class="pt-btn-backup" id="btnDownloadBackup" type="button" onclick="exportProgressBackup()">
+          📥 Backup File Download Karein (.json)
+        </button>
+        <button class="pt-btn-restore" id="btnTriggerRestore" type="button" onclick="document.getElementById('backupFileInput').click()">
+          📤 Backup File Restore Karein (.json)
+        </button>
+        <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="if(this.files[0]) importProgressBackup(this.files[0])">
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="lessons.js"></script>
+  <script src="words_10k.js"></script>
+  <script src="vocab_categories.js"></script>
+  <script src="ai.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+
+</body>
+</html>

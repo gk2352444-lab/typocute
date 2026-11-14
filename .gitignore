@@ -1,0 +1,12 @@
+# Dependencies and caches
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Chrome / Edge temp profiles
+chrome_test_*
+UserData/
+
+# Logs and scratch
+*.log
+*.tmp
