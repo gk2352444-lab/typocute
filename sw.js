@@ -1,7 +1,7 @@
 /**
  * sw.js - Service Worker for Offline TypoCute with Auto-Update
  */
-const CACHE_NAME = "typocute-cache-v6";
+const CACHE_NAME = "typocute-cache-v7";
 const ASSETS = [
   "./",
   "./index.html",

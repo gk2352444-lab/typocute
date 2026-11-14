@@ -1030,7 +1030,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111511; // Matches version.json build 2026111511 (v2.7.0 Duolingo 3D Quest Quiz UI)
+const CURRENT_APP_BUILD = 2026111512; // Matches version.json build 2026111512 (v2.8.0 Duolingo 3D Shabd Khoj Redesign)
 
 async function checkForWebUpdates() {
   try {
