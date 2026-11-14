@@ -4450,6 +4450,68 @@ window.openProgressTrackerModal = openProgressTrackerModal;
 window.closeProgressTrackerModal = closeProgressTrackerModal;
 window.loadDirectParagraph = loadDirectParagraph;
 
+/* ═══════════════════════════════════════════════════
+   PWA & NATIVE DESKTOP APPLICATION INSTALLATION
+   ═══════════════════════════════════════════════════ */
+
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById("btnHeaderInstallApp");
+  if (btn) {
+    btn.style.display = "inline-flex";
+  }
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  const btn = document.getElementById("btnHeaderInstallApp");
+  if (btn) {
+    btn.innerHTML = "✅ <span>Installed</span>";
+    btn.disabled = true;
+  }
+  alert("🎉 Shaabash! TypoCute aapke laptop me real application ki tarah install ho gaya hai! Ab aap ise Desktop ya Start Menu se open kar sakte hain. 💖");
+});
+
+window.triggerAppInstall = function() {
+  openInstallModal();
+};
+
+window.openInstallModal = function() {
+  const modal = document.getElementById("installAppModal");
+  if (modal) modal.style.display = "flex";
+};
+
+window.closeInstallModal = function() {
+  const modal = document.getElementById("installAppModal");
+  if (modal) modal.style.display = "none";
+};
+
+window.handlePwaInstallBtnClick = async function() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === "accepted") {
+      closeInstallModal();
+    }
+    deferredInstallPrompt = null;
+  } else {
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    if (isStandalone) {
+      alert("🎀 TypoCute pehle se hi aapke laptop me installed application ke roop me chal raha hai! 🌸");
+    } else {
+      alert(
+        "📲 1-Click Install Guide:\n\n" +
+        "1. Apne Chrome ya Edge browser ke top-right me 3 dots (⋮) par click karein.\n" +
+        "2. Wahan 'Install TypoCute' ya 'Apps > Install this site as an app' par click karein.\n" +
+        "3. Bas! Laptop ke Desktop par TypoCute ka real application shortcut ban jayega! 🎀"
+      );
+    }
+  }
+};
+
 window.exportProgressBackup = function() {
   const backupData = {
     appName: "TypoCute",

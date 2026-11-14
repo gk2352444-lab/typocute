@@ -3379,6 +3379,199 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
+/* Install Button in Top Header */
+.badge-install-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+  animation: pulseInstallBtn 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulseInstallBtn {
+  0% { transform: scale(1); box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35); }
+  100% { transform: scale(1.04); box-shadow: 0 4px 14px rgba(139, 92, 246, 0.55); }
+}
+
+.badge-install-btn:hover {
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.6);
+}
+
+.badge-install-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Install Modal Card */
+.install-card-modal {
+  max-width: 640px;
+  width: 94%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 26px;
+  padding: 24px;
+  background: #ffffff;
+  border: 3px solid #fbcfe8;
+  box-shadow: 0 20px 45px rgba(139, 92, 246, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.install-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #fce7f3;
+  padding-bottom: 12px;
+}
+
+.install-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.install-header-icon {
+  font-size: 2rem;
+}
+
+.install-header-title {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: #831843;
+  margin: 0;
+}
+
+.install-header-subtitle {
+  font-size: 0.82rem;
+  color: #db2777;
+  margin: 2px 0 0 0;
+}
+
+.install-features-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.if-badge {
+  background: #fdf2f8;
+  border: 1px solid #fbcfe8;
+  color: #be185d;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.install-options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.install-option-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 16px 18px;
+  background: #f9fafb;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.install-option-card.recommended {
+  border-color: #a855f7;
+  background: #faf5ff;
+}
+
+.install-option-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.ioc-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #8b5cf6;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.ioc-badge.secondary {
+  background: #64748b;
+}
+
+.ioc-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.ioc-desc {
+  font-size: 0.84rem;
+  color: #4b5563;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.ioc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ioc-btn.primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  color: #ffffff;
+}
+
+.ioc-btn.primary:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.ioc-btn.secondary {
+  background: #ffffff;
+  color: #374151;
+  border: 1.5px solid #d1d5db;
+}
+
+.ioc-btn.secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.ioc-help {
+  font-size: 0.78rem;
+  color: #7c3aed;
+  margin-top: 8px;
+}
+
 /* Progress Tracker Modal Styles */
 .progress-tracker-card {
   max-width: 660px;

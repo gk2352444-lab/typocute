@@ -1,10 +1,12 @@
 {
-  "name": "TypoCute - English Typing & Speaking Master",
+  "name": "TypoCute - English Typing & Learning Master",
   "short_name": "TypoCute",
   "description": "Cute Duolingo-style English Typing practice for Hindi-medium students",
-  "start_url": "index.html",
+  "id": "typocute-duolingo-app",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "orientation": "landscape",
+  "orientation": "any",
   "background_color": "#fff5f7",
   "theme_color": "#f472b6",
   "icons": [
@@ -12,7 +14,18 @@
       "src": "app_icon.png",
       "sizes": "256x256",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "app_icon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "app_icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
     }
   ]
 }

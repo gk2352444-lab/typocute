@@ -48,6 +48,9 @@
       <button class="badge-tracker-btn" id="btnHeaderTracker" type="button" title="Progress Tracker & Roadmap (कहाँ तक पहुँचे)" onclick="openProgressTrackerModal()">
         📊 <span>Progress</span>
       </button>
+      <button class="badge-install-btn" id="btnHeaderInstallApp" type="button" title="Laptop Me TypoCute App Install Karein" onclick="triggerAppInstall()">
+        📲 <span>Install App</span>
+      </button>
     </div>
   </header>
 
@@ -1573,6 +1576,58 @@
           📤 Backup File Restore Karein (.json)
         </button>
         <input type="file" id="backupFileInput" accept=".json" style="display:none;" onchange="if(this.files[0]) importProgressBackup(this.files[0])">
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Real Laptop Application Install Modal -->
+  <div class="modal-overlay" id="installAppModal" style="display:none;">
+    <div class="modal-card install-card-modal">
+      <div class="install-card-header">
+        <div class="install-header-left">
+          <span class="install-header-icon">💻</span>
+          <div>
+            <h2 class="install-header-title">TypoCute Laptop Me Install Karein</h2>
+            <p class="install-header-subtitle">Real Desktop Application Ki Tarah Chalayein</p>
+          </div>
+        </div>
+        <button class="pt-close-btn" type="button" onclick="closeInstallModal()">✕</button>
+      </div>
+
+      <!-- Feature Badges -->
+      <div class="install-features-row">
+        <div class="if-badge">✨ Desktop Par App Icon</div>
+        <div class="if-badge">🟢 100% Offline Chalta Hai</div>
+        <div class="if-badge">☁️ Auto-Update Hoga</div>
+      </div>
+
+      <div class="install-options-container">
+        <!-- Option 1: 1-Click Native Browser App (PWA) -->
+        <div class="install-option-card recommended">
+          <div class="ioc-badge">⭐ Recommended & Fastest</div>
+          <div class="ioc-title">📲 1-Click Desktop App (PWA)</div>
+          <div class="ioc-desc">
+            Bina kisi file download ke, seedha aapke laptop me real software ban jayega. Desktop par icon aayega aur server se automatic update hota rahega!
+          </div>
+          <button class="ioc-btn primary" type="button" onclick="handlePwaInstallBtnClick()">
+            📲 Laptop Me Install Karein (1-Click)
+          </button>
+          <div class="ioc-help">
+            💡 <em>Tip: Chrome ya Edge ke top-right 3-dots (⋮) me ja kar bhi <strong>"Install TypoCute"</strong> chuna ja sakta hai.</em>
+          </div>
+        </div>
+
+        <!-- Option 2: Full Windows 11 Setup Installer (.exe) -->
+        <div class="install-option-card">
+          <div class="ioc-badge secondary">💻 Traditional Setup</div>
+          <div class="ioc-title">🪟 Windows 11 Setup Installer (.exe)</div>
+          <div class="ioc-desc">
+            Agar aap purani tarah Setup Wizard (.exe) chala kar Program Files me install karna chahte hain toh yahan se Setup download karein.
+          </div>
+          <a class="ioc-btn secondary" href="https://github.com/gk2352444-lab/typocute/raw/main/TypoCute_Windows11_Setup.exe" target="_blank" download>
+            📥 TypoCute_Windows11_Setup.exe Download Karein
+          </a>
+        </div>
       </div>
     </div>
   </div>
