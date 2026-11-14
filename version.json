@@ -1,9 +1,9 @@
 {
-  "version": "2.4.0",
-  "build": 2026111504,
-  "updatedAt": "2026-11-15T00:55:00Z",
+  "version": "2.5.0",
+  "build": 2026111505,
+  "updatedAt": "2026-11-15T01:10:00Z",
   "appName": "TypoCute Duolingo Edition",
-  "releaseNotes": "Authentic Duolingo 3D dual-voice audio buttons for English and Hindi",
+  "releaseNotes": "Studio-grade neural human-voice audio for English & Hindi with 100 core pre-bundled offline audio files and authentic Duolingo 3D UI",
   "serverUrl": "https://gk2352444-lab.github.io/typocute/",
   "files": [
     "index.html",

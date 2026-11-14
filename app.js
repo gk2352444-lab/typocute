@@ -438,8 +438,44 @@ function playLofiLoop() {
 }
 
 /* ═══════════════════════════════════════════════════
-   4. TEXT-TO-SPEECH PRONUNCIATION (English & Hindi Duo Voices)
+   4. HYBRID NEURAL AUDIO ENGINE (English + Hindi Duolingo Duo Voice)
+   - Tier 1: Local Pre-bundled Edge Neural Audio (100 core words, 200 files)
+   - Tier 2: Real-time Google Neural Audio Stream (HTML5 new Audio)
+   - Tier 3: Browser SpeechSynthesis (Natural Hindi / Indian English) offline fallback
    ═══════════════════════════════════════════════════ */
+
+// Pre-bundled local offline audio list generated with Edge Neural TTS
+const LOCAL_AUDIO_SET = new Set([
+  "apple", "baby", "bad", "big", "bird", "black", "blue", "book", "boy", "bread",
+  "brother", "car", "cat", "chair", "child", "city", "cold", "cow", "cry", "dance",
+  "dog", "door", "dream", "ear", "eye", "face", "fast", "father", "fire", "fish",
+  "flower", "food", "friend", "fruit", "girl", "gold", "good", "green", "hand", "happy",
+  "head", "heart", "horse", "hot", "house", "king", "laugh", "light", "love", "man",
+  "milk", "moon", "mother", "name", "new", "night", "old", "paper", "pen", "pencil",
+  "play", "queen", "rain", "read", "red", "rice", "river", "road", "room", "run",
+  "sad", "school", "shirt", "shoe", "silver", "sing", "sister", "sky", "sleep", "slow",
+  "small", "smile", "star", "sun", "sweet", "table", "tea", "test", "time", "train",
+  "tree", "village", "walk", "water", "white", "wind", "window", "woman", "write", "yellow"
+]);
+
+let CURRENT_AUDIO_PLAYING = null;
+
+function stopCurrentAudio() {
+  if (CURRENT_AUDIO_PLAYING) {
+    try {
+      CURRENT_AUDIO_PLAYING.pause();
+      CURRENT_AUDIO_PLAYING.currentTime = 0;
+    } catch(e) {}
+    CURRENT_AUDIO_PLAYING = null;
+  }
+  if ("speechSynthesis" in window) {
+    try { window.speechSynthesis.cancel(); } catch(e) {}
+  }
+  // Clear any playing-audio classes from pills
+  document.getElementById("speakBtn")?.classList.remove("playing-audio");
+  document.getElementById("speakHindiBtn")?.classList.remove("playing-audio");
+  document.getElementById("turtleSpeakBtn")?.classList.remove("playing-audio");
+}
 
 function getBestVoice(type) {
   if (!("speechSynthesis" in window)) return null;
@@ -473,137 +509,193 @@ function cleanHindiForSpeech(text) {
   return clean.trim();
 }
 
+/**
+ * Universal voice player:
+ * 1. Checks local pre-bundled neural audio (instant offline)
+ * 2. If not local, streams real Google neural human voice (online)
+ * 3. If stream fails or device is offline, falls back immediately to SpeechSynthesis
+ */
+function playAudioVoice({ text, lang, isSlow = false, baseWord = "", onStart, onEnd }) {
+  if (!STATE.soundEnabled) {
+    if (onEnd) onEnd();
+    return;
+  }
+
+  stopCurrentAudio();
+
+  const cleanText = lang === "hi" ? cleanHindiForSpeech(text) : (text || "").replace(/[^a-zA-Z0-9\s]/g, "").trim();
+  if (!cleanText) {
+    if (onEnd) onEnd();
+    return;
+  }
+
+  const lookupKey = (baseWord || cleanText).toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  // Determine potential local pre-bundled file
+  let localAudioUrl = null;
+  if (lookupKey && LOCAL_AUDIO_SET.has(lookupKey)) {
+    localAudioUrl = `./audio/${lookupKey}_${lang}.mp3`;
+  }
+
+  // Google neural stream URL
+  const googleStreamUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${lang}&client=tw-ob`;
+
+  // Fallback to browser SpeechSynthesis
+  function doSpeechSynthesisFallback() {
+    if (!("speechSynthesis" in window)) {
+      if (onEnd) onEnd();
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    if (lang === "hi") {
+      utterance.lang = "hi-IN";
+      utterance.rate = 0.92;
+      utterance.pitch = 1.0;
+      const v = getBestVoice("hi");
+      if (v) { utterance.voice = v; utterance.lang = v.lang; }
+    } else {
+      utterance.lang = "en-US";
+      utterance.rate = isSlow ? 0.55 : (STATE.speechRate || 0.95);
+      utterance.pitch = isSlow ? 1.05 : 1.0;
+      const v = getBestVoice("en");
+      if (v) { utterance.voice = v; utterance.lang = v.lang; }
+    }
+
+    if (onStart) onStart();
+    utterance.onend = () => { if (onEnd) onEnd(); };
+    utterance.onerror = () => { if (onEnd) onEnd(); };
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Target URL: local first, then stream (if online)
+  const targetUrl = localAudioUrl || (navigator.onLine !== false ? googleStreamUrl : null);
+
+  if (!targetUrl) {
+    doSpeechSynthesisFallback();
+    return;
+  }
+
+  try {
+    const audio = new Audio(targetUrl);
+    CURRENT_AUDIO_PLAYING = audio;
+    audio.playbackRate = isSlow ? 0.70 : 1.0;
+
+    let hasEnded = false;
+    const safeEnd = () => {
+      if (hasEnded) return;
+      hasEnded = true;
+      if (CURRENT_AUDIO_PLAYING === audio) CURRENT_AUDIO_PLAYING = null;
+      if (onEnd) onEnd();
+    };
+
+    audio.onplay = () => {
+      if (onStart) onStart();
+    };
+
+    audio.onended = safeEnd;
+
+    audio.onerror = () => {
+      // Local or remote error -> graceful fallback
+      CURRENT_AUDIO_PLAYING = null;
+      doSpeechSynthesisFallback();
+    };
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(err => {
+        // Autoplay or network block -> fallback immediately
+        CURRENT_AUDIO_PLAYING = null;
+        doSpeechSynthesisFallback();
+      });
+    }
+  } catch(e) {
+    doSpeechSynthesisFallback();
+  }
+}
+
 function speakWord(text, isSlow = false) {
-  if (!STATE.soundEnabled || !("speechSynthesis" in window)) return;
+  if (!STATE.soundEnabled) return;
   const words = (text || "").trim().split(/\s+/).filter(Boolean);
   if (words.length > 5 || (typeof CURRENT_SIMPLIFIED_MODE !== "undefined" && CURRENT_SIMPLIFIED_MODE === "paragraph_50")) {
     return;
   }
-  window.speechSynthesis.cancel();
-  const clean = text.replace(/[^a-zA-Z0-9\s]/g, "").trim();
-  if (!clean) return;
 
-  const utterance  = new SpeechSynthesisUtterance(clean);
-  utterance.lang   = "en-US";
-  utterance.rate   = isSlow ? 0.52 : (STATE.speechRate || 0.95);
-  utterance.pitch  = isSlow ? 1.05 : 1.0;
+  const btnId = isSlow ? "turtleSpeakBtn" : "speakBtn";
+  const btn = document.getElementById(btnId);
 
-  const natural = getBestVoice("en");
-  if (natural) {
-    utterance.voice = natural;
-    utterance.lang  = natural.lang;
-  }
+  playAudioVoice({
+    text: text,
+    lang: "en",
+    isSlow: isSlow,
+    baseWord: text,
+    onStart: () => { btn?.classList.add("playing-audio"); },
+    onEnd: () => { btn?.classList.remove("playing-audio"); }
+  });
+}
 
-  const speakBtn = document.getElementById("speakBtn");
-  if (speakBtn) speakBtn.classList.add("playing-audio");
-  utterance.onend = () => { if (speakBtn) speakBtn.classList.remove("playing-audio"); };
-  utterance.onerror = () => { if (speakBtn) speakBtn.classList.remove("playing-audio"); };
+function speakHindiOnly(text, baseWord = "") {
+  if (!STATE.soundEnabled) return;
+  const hiBtn = document.getElementById("speakHindiBtn");
 
-  window.speechSynthesis.speak(utterance);
+  playAudioVoice({
+    text: text,
+    lang: "hi",
+    isSlow: false,
+    baseWord: baseWord || STATE.targetText,
+    onStart: () => { hiBtn?.classList.add("playing-audio"); },
+    onEnd: () => { hiBtn?.classList.remove("playing-audio"); }
+  });
 }
 
 function speakHindi(text) {
-  speakHindiOnly(text);
+  speakHindiOnly(text, STATE.targetText);
 }
 
-function speakHindiOnly(text) {
-  if (!STATE.soundEnabled || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-
-  const cleanHi = cleanHindiForSpeech(text);
-  if (!cleanHi) return;
-
-  const utterance = new SpeechSynthesisUtterance(cleanHi);
-  utterance.lang = "hi-IN";
-  utterance.rate = 0.92;
-  utterance.pitch = 1.0;
-
-  const hindiVoice = getBestVoice("hi");
-  if (hindiVoice) {
-    utterance.voice = hindiVoice;
-    utterance.lang = hindiVoice.lang;
-  }
-
-  const hiBtn = document.getElementById("speakHindiBtn");
-  if (hiBtn) hiBtn.classList.add("playing-audio");
-  utterance.onend = () => { if (hiBtn) hiBtn.classList.remove("playing-audio"); };
-  utterance.onerror = () => { if (hiBtn) hiBtn.classList.remove("playing-audio"); };
-
-  window.speechSynthesis.speak(utterance);
-}
-
-// Speaks English first, followed smoothly by Hindi meaning in "Chhote Shabd" mode!
+// Speaks English first, followed smoothly by Hindi in "Chhote Shabd" mode!
 function speakWordAndHindi(englishText, hindiText, isSlow = false) {
-  if (!STATE.soundEnabled || !("speechSynthesis" in window)) return;
+  if (!STATE.soundEnabled) return;
   if (typeof CURRENT_SIMPLIFIED_MODE !== "undefined" && CURRENT_SIMPLIFIED_MODE === "paragraph_50") {
     return;
   }
-
-  window.speechSynthesis.cancel();
 
   const cleanEn = (englishText || "").replace(/[^a-zA-Z0-9\s]/g, "").trim();
   const cleanHi = cleanHindiForSpeech(hindiText);
 
   if (!cleanEn && !cleanHi) return;
-
-  const speakBtn = document.getElementById("speakBtn");
-  if (speakBtn) speakBtn.classList.add("playing-audio");
-
   if (!cleanEn && cleanHi) {
-    speakHindiOnly(cleanHi);
+    speakHindiOnly(cleanHi, englishText);
     return;
   }
 
-  const enUtterance = new SpeechSynthesisUtterance(cleanEn);
-  enUtterance.lang = "en-US";
-  enUtterance.rate = isSlow ? 0.55 : (STATE.speechRate || 0.95);
-  enUtterance.pitch = isSlow ? 1.05 : 1.0;
+  const speakBtn = document.getElementById("speakBtn");
+  const hiBtn    = document.getElementById("speakHindiBtn");
 
-  const natural = getBestVoice("en");
-  if (natural) {
-    enUtterance.voice = natural;
-    enUtterance.lang  = natural.lang;
-  }
+  // Step 1: Play English
+  playAudioVoice({
+    text: cleanEn,
+    lang: "en",
+    isSlow: isSlow,
+    baseWord: cleanEn,
+    onStart: () => { speakBtn?.classList.add("playing-audio"); },
+    onEnd: () => {
+      speakBtn?.classList.remove("playing-audio");
 
-  if (cleanHi) {
-    enUtterance.onend = () => {
-      setTimeout(() => {
-        if (!("speechSynthesis" in window)) return;
-        const hiUtterance = new SpeechSynthesisUtterance(cleanHi);
-        hiUtterance.lang = "hi-IN";
-        hiUtterance.rate = 0.92;
-        hiUtterance.pitch = 1.0;
-
-        const hindiVoice = getBestVoice("hi");
-        if (hindiVoice) {
-          hiUtterance.voice = hindiVoice;
-          hiUtterance.lang = hindiVoice.lang;
-        }
-
-        hiUtterance.onend = () => {
-          if (speakBtn) speakBtn.classList.remove("playing-audio");
-        };
-        hiUtterance.onerror = () => {
-          if (speakBtn) speakBtn.classList.remove("playing-audio");
-        };
-
-        window.speechSynthesis.speak(hiUtterance);
-      }, 250);
-    };
-
-    enUtterance.onerror = () => {
-      if (speakBtn) speakBtn.classList.remove("playing-audio");
-    };
-  } else {
-    enUtterance.onend = () => {
-      if (speakBtn) speakBtn.classList.remove("playing-audio");
-    };
-    enUtterance.onerror = () => {
-      if (speakBtn) speakBtn.classList.remove("playing-audio");
-    };
-  }
-
-  window.speechSynthesis.speak(enUtterance);
+      // Step 2: If Hindi meaning exists, pause 220ms then play Hindi!
+      if (cleanHi) {
+        setTimeout(() => {
+          if (!STATE.soundEnabled) return;
+          playAudioVoice({
+            text: cleanHi,
+            lang: "hi",
+            isSlow: false,
+            baseWord: cleanEn,
+            onStart: () => { hiBtn?.classList.add("playing-audio"); },
+            onEnd: () => { hiBtn?.classList.remove("playing-audio"); }
+          });
+        }, 220);
+      }
+    }
+  });
 }
 
 /* ═══════════════════════════════════════════════════
@@ -685,7 +777,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111504; // Matches version.json build 2026111504
+const CURRENT_APP_BUILD = 2026111505; // Matches version.json build 2026111505
 
 async function checkForWebUpdates() {
   try {
@@ -1083,7 +1175,7 @@ function initTypingArena() {
 
   if (speakBtn) {
     speakBtn.addEventListener("click", () => {
-      speakWordAndHindi(STATE.targetText, STATE.targetHindi, false);
+      speakWord(STATE.targetText, false);
       focusTypingArea();
     });
   }
@@ -4504,9 +4596,7 @@ function loadSimplifiedTopic(mode, idx) {
   const speechBubble = document.getElementById("duoSpeechBubble");
   const grammarBite  = document.getElementById("duoGrammarBite");
 
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-  }
+  stopCurrentAudio();
 
   if (mode === "small_words") {
     if (audioActions) audioActions.style.display = "flex";
@@ -4558,9 +4648,7 @@ function loadDirectParagraph(para) {
   const speechBubble = document.getElementById("duoSpeechBubble");
   const grammarBite  = document.getElementById("duoGrammarBite");
 
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-  }
+  stopCurrentAudio();
 
   if (audioActions) audioActions.style.display = "none";
   if (categoryTag)  categoryTag.style.display = "inline-block";
