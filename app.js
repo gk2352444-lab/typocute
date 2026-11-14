@@ -438,8 +438,40 @@ function playLofiLoop() {
 }
 
 /* ═══════════════════════════════════════════════════
-   4. TEXT-TO-SPEECH PRONUNCIATION (Normal & Turtle 🐢)
+   4. TEXT-TO-SPEECH PRONUNCIATION (English & Hindi Duo Voices)
    ═══════════════════════════════════════════════════ */
+
+function getBestVoice(type) {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices() || [];
+  if (type === "hi") {
+    return voices.find(v =>
+      v.lang === "hi-IN" || v.lang === "hi_IN" || v.lang.startsWith("hi") ||
+      v.name.includes("हिन्दी") || v.name.toLowerCase().includes("hindi") ||
+      v.name.includes("Kalpana") || v.name.includes("Hemant")
+    ) || null;
+  } else {
+    return voices.find(v =>
+      (v.lang === "en-IN" || v.lang === "en_IN" || v.name.toLowerCase().includes("india") ||
+       v.name.includes("Heera") || v.name.includes("Neerja") || v.name.includes("Ravi"))
+    ) || voices.find(v =>
+      v.lang.startsWith("en") &&
+      (v.name.includes("Google") || v.name.includes("Zira") || v.name.includes("Natural"))
+    ) || voices.find(v => v.lang.startsWith("en")) || null;
+  }
+}
+
+function cleanHindiForSpeech(text) {
+  if (!text) return "";
+  let clean = text.replace(/\[.*?\]/g, "").replace(/\(.*?\)/g, "").trim();
+  if (clean.includes("/")) {
+    clean = clean.split("/")[0].trim();
+  }
+  if (clean.includes(",")) {
+    clean = clean.split(",")[0].trim();
+  }
+  return clean.trim();
+}
 
 function speakWord(text, isSlow = false) {
   if (!STATE.soundEnabled || !("speechSynthesis" in window)) return;
@@ -453,41 +485,125 @@ function speakWord(text, isSlow = false) {
 
   const utterance  = new SpeechSynthesisUtterance(clean);
   utterance.lang   = "en-US";
-  utterance.rate   = isSlow ? 0.52 : STATE.speechRate;
+  utterance.rate   = isSlow ? 0.52 : (STATE.speechRate || 0.95);
   utterance.pitch  = isSlow ? 1.05 : 1.0;
 
-  const voices = window.speechSynthesis.getVoices();
-  // 1. Prioritize Indian English voice if installed (Heera, Neerja, Ravi, Google en-IN)
-  const indianEnglish = voices.find(v =>
-    (v.lang === "en-IN" || v.lang === "en_IN" || v.name.toLowerCase().includes("india") ||
-     v.name.includes("Heera") || v.name.includes("Neerja") || v.name.includes("Ravi"))
-  );
-  // 2. Fallback to clean female Google US English or Microsoft Zira
-  const natural = indianEnglish || voices.find(v =>
-    v.lang.startsWith("en") &&
-    (v.name.includes("Google") || v.name.includes("Zira") || v.name.includes("Natural"))
-  ) || voices.find(v => v.lang.startsWith("en"));
-
+  const natural = getBestVoice("en");
   if (natural) {
     utterance.voice = natural;
     utterance.lang  = natural.lang;
   }
 
+  const speakBtn = document.getElementById("speakBtn");
+  if (speakBtn) speakBtn.classList.add("playing-audio");
+  utterance.onend = () => { if (speakBtn) speakBtn.classList.remove("playing-audio"); };
+  utterance.onerror = () => { if (speakBtn) speakBtn.classList.remove("playing-audio"); };
+
   window.speechSynthesis.speak(utterance);
 }
 
 function speakHindi(text) {
+  speakHindiOnly(text);
+}
+
+function speakHindiOnly(text) {
   if (!STATE.soundEnabled || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
+
+  const cleanHi = cleanHindiForSpeech(text);
+  if (!cleanHi) return;
+
+  const utterance = new SpeechSynthesisUtterance(cleanHi);
   utterance.lang = "hi-IN";
-  utterance.rate = 0.9;
-  const voices = window.speechSynthesis.getVoices();
-  const hindiVoice = voices.find(v =>
-    v.lang === "hi-IN" || v.name.includes("हिन्दी") || v.name.toLowerCase().includes("hindi")
-  );
-  if (hindiVoice) utterance.voice = hindiVoice;
+  utterance.rate = 0.92;
+  utterance.pitch = 1.0;
+
+  const hindiVoice = getBestVoice("hi");
+  if (hindiVoice) {
+    utterance.voice = hindiVoice;
+    utterance.lang = hindiVoice.lang;
+  }
+
+  const hiBtn = document.getElementById("speakHindiBtn");
+  if (hiBtn) hiBtn.classList.add("playing-audio");
+  utterance.onend = () => { if (hiBtn) hiBtn.classList.remove("playing-audio"); };
+  utterance.onerror = () => { if (hiBtn) hiBtn.classList.remove("playing-audio"); };
+
   window.speechSynthesis.speak(utterance);
+}
+
+// Speaks English first, followed smoothly by Hindi meaning in "Chhote Shabd" mode!
+function speakWordAndHindi(englishText, hindiText, isSlow = false) {
+  if (!STATE.soundEnabled || !("speechSynthesis" in window)) return;
+  if (typeof CURRENT_SIMPLIFIED_MODE !== "undefined" && CURRENT_SIMPLIFIED_MODE === "paragraph_50") {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const cleanEn = (englishText || "").replace(/[^a-zA-Z0-9\s]/g, "").trim();
+  const cleanHi = cleanHindiForSpeech(hindiText);
+
+  if (!cleanEn && !cleanHi) return;
+
+  const speakBtn = document.getElementById("speakBtn");
+  if (speakBtn) speakBtn.classList.add("playing-audio");
+
+  if (!cleanEn && cleanHi) {
+    speakHindiOnly(cleanHi);
+    return;
+  }
+
+  const enUtterance = new SpeechSynthesisUtterance(cleanEn);
+  enUtterance.lang = "en-US";
+  enUtterance.rate = isSlow ? 0.55 : (STATE.speechRate || 0.95);
+  enUtterance.pitch = isSlow ? 1.05 : 1.0;
+
+  const natural = getBestVoice("en");
+  if (natural) {
+    enUtterance.voice = natural;
+    enUtterance.lang  = natural.lang;
+  }
+
+  if (cleanHi) {
+    enUtterance.onend = () => {
+      setTimeout(() => {
+        if (!("speechSynthesis" in window)) return;
+        const hiUtterance = new SpeechSynthesisUtterance(cleanHi);
+        hiUtterance.lang = "hi-IN";
+        hiUtterance.rate = 0.92;
+        hiUtterance.pitch = 1.0;
+
+        const hindiVoice = getBestVoice("hi");
+        if (hindiVoice) {
+          hiUtterance.voice = hindiVoice;
+          hiUtterance.lang = hindiVoice.lang;
+        }
+
+        hiUtterance.onend = () => {
+          if (speakBtn) speakBtn.classList.remove("playing-audio");
+        };
+        hiUtterance.onerror = () => {
+          if (speakBtn) speakBtn.classList.remove("playing-audio");
+        };
+
+        window.speechSynthesis.speak(hiUtterance);
+      }, 250);
+    };
+
+    enUtterance.onerror = () => {
+      if (speakBtn) speakBtn.classList.remove("playing-audio");
+    };
+  } else {
+    enUtterance.onend = () => {
+      if (speakBtn) speakBtn.classList.remove("playing-audio");
+    };
+    enUtterance.onerror = () => {
+      if (speakBtn) speakBtn.classList.remove("playing-audio");
+    };
+  }
+
+  window.speechSynthesis.speak(enUtterance);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -569,7 +685,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111502; // Matches version.json build 2026111502
+const CURRENT_APP_BUILD = 2026111503; // Matches version.json build 2026111503
 
 async function checkForWebUpdates() {
   try {
@@ -967,7 +1083,23 @@ function initTypingArena() {
 
   if (speakBtn) {
     speakBtn.addEventListener("click", () => {
-      speakWord(STATE.targetText, false);
+      speakWordAndHindi(STATE.targetText, STATE.targetHindi, false);
+      focusTypingArea();
+    });
+  }
+
+  const speakHindiBtn = document.getElementById("speakHindiBtn");
+  if (speakHindiBtn) {
+    speakHindiBtn.addEventListener("click", () => {
+      speakHindiOnly(STATE.targetHindi);
+      focusTypingArea();
+    });
+  }
+
+  const hindiMeaningEl = document.getElementById("hindiMeaningText");
+  if (hindiMeaningEl) {
+    hindiMeaningEl.addEventListener("click", () => {
+      speakHindiOnly(STATE.targetHindi);
       focusTypingArea();
     });
   }
@@ -1352,7 +1484,7 @@ function showDuoFeedback(isCorrect = true, title = "Shaabash! Ekdum Sahi! 🌸")
 
     if (speakBtn) {
       speakBtn.onclick = () => {
-        speakWord(word);
+        speakWordAndHindi(word, STATE.targetHindi);
       };
     }
   }
@@ -1820,7 +1952,12 @@ function loadItem(index) {
   } else if (STATE.mode === "tiles") {
     setupTilesView();
   } else {
-    setTimeout(() => speakWord(STATE.targetText, false), 100);
+    // In Chhote Shabd (small words), speak both English and Hindi!
+    if (typeof CURRENT_SIMPLIFIED_MODE === "undefined" || CURRENT_SIMPLIFIED_MODE === "small_words") {
+      setTimeout(() => speakWordAndHindi(STATE.targetText, STATE.targetHindi, false), 150);
+    } else {
+      setTimeout(() => speakWord(STATE.targetText, false), 150);
+    }
   }
 }
 

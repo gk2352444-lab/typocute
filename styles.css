@@ -1094,6 +1094,42 @@ body {
   background: linear-gradient(135deg, #ffffff, #fef9c3);
 }
 
+.hindi-btn {
+  width: 38px;
+  height: 38px;
+  font-size: 1.05rem;
+  border-color: #fed7aa;
+  border-bottom-color: #f97316;
+  background: linear-gradient(135deg, #ffffff, #fff7ed);
+}
+
+.hindi-btn:hover {
+  background: #ffedd5;
+  border-color: #fb923c;
+  transform: translateY(-1px) scale(1.08);
+}
+
+.duo-audio-btn.playing-audio {
+  animation: audioPulse 0.4s infinite alternate ease-in-out;
+  border-color: #ec4899;
+}
+
+@keyframes audioPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+  100% { transform: scale(1.12); box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); }
+}
+
+.duo-prompt-hindi {
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.duo-prompt-hindi:hover {
+  color: #be185d;
+  transform: scale(1.02);
+}
+
 .duo-prompt-info {
   display: flex;
   flex-direction: column;
