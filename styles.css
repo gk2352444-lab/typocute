@@ -1007,14 +1007,21 @@ body {
 }
 
 .duo-speech-bubble {
-  flex: 1;
+  background: #ffffff;
+  border: 2px solid #fbcfe8;
+  border-bottom: 4px solid #f472b6;
+  border-radius: 20px;
+  padding: 8px 18px;
+  box-shadow: 0 4px 14px rgba(244, 114, 182, 0.12), 0 2px 4px rgba(0, 0, 0, 0.03);
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
 }
 
 .duo-speech-bubble.is-paragraph-bubble {
-  padding: 6px 14px;
+  padding: 8px 16px;
 }
 
 /* Pointer tail pointing toward the Mascot Duo */
@@ -1029,6 +1036,7 @@ body {
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
   border-right: 12px solid #fbcfe8;
+  z-index: 1;
 }
 
 .duo-speech-bubble::after {
@@ -1042,99 +1050,112 @@ body {
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
   border-right: 10px solid #ffffff;
+  z-index: 2;
 }
 
 .duo-bubble-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
 }
 
+/* ============================================================
+   AUTHENTIC DUOLINGO 3D AUDIO BUTTONS (ENGLISH & HINDI)
+   ============================================================ */
 .duo-audio-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.duo-audio-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid var(--pink-300);
-  border-bottom: 3.5px solid var(--pink-500);
-  background: linear-gradient(135deg, #ffffff, #fff0f6);
-  font-size: 1.15rem;
-  display: flex;
+.duo-audio-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui), "Nunito", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border: none;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(244, 114, 182, 0.18), -1px -1px 3px #ffffff;
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   user-select: none;
+  white-space: nowrap;
 }
 
-.duo-audio-btn:hover {
-  transform: translateY(-1px) scale(1.05);
-  background: var(--pink-100);
+.duo-audio-pill:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
 }
 
-.duo-audio-btn:active {
+.duo-audio-pill:active {
   transform: translateY(2px);
-  border-bottom-width: 1.5px;
+  border-bottom-width: 1px !important;
 }
 
-.turtle-btn {
-  width: 36px;
-  height: 36px;
+/* 1. English Voice Button (Iconic Duolingo Cyan Blue) */
+.duo-pill-en {
+  background: #1cb0f6;
+  color: #ffffff;
+  border-bottom: 3.5px solid #1899d6;
+  box-shadow: 0 3px 8px rgba(28, 176, 246, 0.28);
+}
+
+/* 2. Hindi Voice Button (Iconic Duolingo Leaf Green) */
+.duo-pill-hi {
+  background: #58cc02;
+  color: #ffffff;
+  border-bottom: 3.5px solid #46a302;
+  box-shadow: 0 3px 8px rgba(88, 204, 2, 0.28);
+}
+
+/* 3. Slow Turtle Button (Iconic Duolingo Sunshine Yellow) */
+.duo-pill-turtle {
+  background: #ffc800;
+  color: #78350f;
+  border-bottom: 3.5px solid #e5a50a;
+  box-shadow: 0 3px 8px rgba(255, 200, 0, 0.28);
+}
+
+/* Active audio wave animation */
+.duo-audio-pill.playing-audio {
+  animation: duoPillPulse 0.4s infinite alternate ease-in-out;
+}
+
+@keyframes duoPillPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.08); filter: brightness(1.18); }
+}
+
+.dap-icon {
   font-size: 1rem;
-  border-color: #fde047;
-  border-bottom-color: #ca8a04;
-  background: linear-gradient(135deg, #ffffff, #fef9c3);
+  line-height: 1;
 }
 
-.hindi-btn {
-  width: 38px;
-  height: 38px;
-  font-size: 1.05rem;
-  border-color: #fed7aa;
-  border-bottom-color: #f97316;
-  background: linear-gradient(135deg, #ffffff, #fff7ed);
+.dap-label {
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
-.hindi-btn:hover {
-  background: #ffedd5;
-  border-color: #fb923c;
-  transform: translateY(-1px) scale(1.08);
-}
-
-.duo-audio-btn.playing-audio {
-  animation: audioPulse 0.4s infinite alternate ease-in-out;
-  border-color: #ec4899;
-}
-
-@keyframes audioPulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-  100% { transform: scale(1.12); box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); }
-}
-
-.duo-prompt-hindi {
-  cursor: pointer;
-  transition: all 0.18s ease;
-  user-select: none;
-}
-
-.duo-prompt-hindi:hover {
-  color: #be185d;
-  transform: scale(1.02);
-}
-
+/* Prompt Info & Hindi typography */
 .duo-prompt-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
   overflow: hidden;
+  flex: 1;
+}
+
+.duo-prompt-hindi-container {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .duo-prompt-category-tag {
@@ -1151,27 +1172,40 @@ body {
 }
 
 .duo-prompt-hindi {
-  font-size: 1.55rem;
-  font-weight: 800;
-  color: #831843;
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #1e293b;
   letter-spacing: 0.3px;
-  line-height: 1.35;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.duo-prompt-hindi:hover {
+  color: #e11d48;
+  transform: scale(1.02);
 }
 
 .duo-speech-bubble.is-paragraph-bubble .duo-prompt-hindi {
-  font-size: 0.82rem;
-  line-height: 1.32;
+  font-size: 0.85rem;
+  line-height: 1.35;
   max-height: 76px;
   overflow-y: hidden;
   font-weight: 700;
   scrollbar-width: none;
+  color: #be185d;
 }
 
 .duo-prompt-pronounce {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: #a21caf;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #be185d;
   letter-spacing: 0.2px;
+  background: #fdf2f8;
+  border: 1px solid #fce7f3;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
 }
 
 /* ============================================================
@@ -5130,5 +5164,19 @@ body {
   .duo-header-metrics {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .duo-bubble-content {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .duo-audio-actions {
+    gap: 6px;
+  }
+
+  .duo-audio-pill {
+    padding: 5px 10px;
+    font-size: 0.72rem;
   }
 }

@@ -685,7 +685,7 @@ function updateConnectionStatus() {
   }
 }
 
-const CURRENT_APP_BUILD = 2026111503; // Matches version.json build 2026111503
+const CURRENT_APP_BUILD = 2026111504; // Matches version.json build 2026111504
 
 async function checkForWebUpdates() {
   try {
